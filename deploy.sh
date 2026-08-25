@@ -7,6 +7,9 @@ cd /home/gens7193/public_html/panel-admin.gen-zi.id
 echo "Pull latest code..."
 git pull origin master
 
+echo "Clear old Laravel bootstrap cache..."
+rm -f bootstrap/cache/*.php
+
 echo "Install dependencies..."
 ~/bin/composer install --no-dev --no-scripts --optimize-autoloader
 
