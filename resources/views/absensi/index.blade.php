@@ -59,8 +59,7 @@
                                 <input
                                     type="date"
                                     id="tanggal_mulai"
-                                    class="form-control"
-                                >
+                                    class="form-control">
 
                             </div>
 
@@ -72,8 +71,7 @@
                                 <input
                                     type="date"
                                     id="tanggal_selesai"
-                                    class="form-control"
-                                >
+                                    class="form-control">
 
                             </div>
 
@@ -84,8 +82,7 @@
 
                                 <select
                                     id="filter_status"
-                                    class="form-control"
-                                >
+                                    class="form-control">
 
                                     <option value="">
                                         Semua
@@ -110,8 +107,7 @@
 
                                 <select
                                     id="filter_user_id"
-                                    class="form-control input-select2"
-                                >
+                                    class="form-control input-select2">
 
                                     <option value="">
                                         Semua Siswa
@@ -119,9 +115,9 @@
 
                                     @foreach($users as $user)
 
-                                        <option value="{{ $user->id }}">
-                                            {{ $user->name }}
-                                        </option>
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->name }}
+                                    </option>
 
                                     @endforeach
 
@@ -136,8 +132,7 @@
 
                                 <select
                                     id="filter_location_id"
-                                    class="form-control"
-                                >
+                                    class="form-control">
 
                                     <option value="">
                                         Semua Location
@@ -145,9 +140,9 @@
 
                                     @foreach($locations as $location)
 
-                                        <option value="{{ $location->id }}">
-                                            {{ $location->name }}
-                                        </option>
+                                    <option value="{{ $location->id }}">
+                                        {{ $location->name }}
+                                    </option>
 
                                     @endforeach
 
@@ -162,8 +157,7 @@
 
                                 <select
                                     id="filter_jadwal_id"
-                                    class="form-control"
-                                >
+                                    class="form-control">
 
                                     <option value="">
                                         Semua Jadwal
@@ -171,9 +165,9 @@
 
                                     @foreach($jadwals as $jadwal)
 
-                                        <option value="{{ $jadwal->id }}">
-                                            {{ isset($jadwal->name) ? $jadwal->name : $jadwal->id }}
-                                        </option>
+                                    <option value="{{ $jadwal->id }}">
+                                        {{ isset($jadwal->name) ? $jadwal->name : $jadwal->id }}
+                                    </option>
 
                                     @endforeach
 
@@ -194,8 +188,7 @@
                                 <button
                                     type="button"
                                     id="btn-filter"
-                                    class="btn btn-primary"
-                                >
+                                    class="btn btn-primary">
                                     <i class="fa fa-search"></i>
                                     Filter
                                 </button>
@@ -203,10 +196,27 @@
                                 <button
                                     type="button"
                                     id="btn-reset"
-                                    class="btn btn-default"
-                                >
+                                    class="btn btn-default">
                                     <i class="fa fa-refresh"></i>
                                     Reset
+                                </button>
+
+                                <button style="margin-left: 40px;"
+                                    type="button"
+                                    id="btn-export-excel"
+                                    class="btn btn-success">
+
+                                    <i class="fa fa-file-excel-o"></i>
+                                    Export Excel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="btn-export-pdf"
+                                    class="btn btn-danger">
+
+                                    <i class="fa fa-file-pdf-o"></i>
+                                    Export PDF
                                 </button>
 
                             </div>
@@ -224,71 +234,79 @@
                             <table
                                 id="absensi_table"
                                 class="table table-bordered table-striped nowrap"
-                                width="100%"
-                            >
+                                width="100%">
 
                                 <thead>
 
-                                <tr>
+                                    <tr>
 
-                                    <th width="5%">
-                                        ID
-                                    </th>
-                                    <th>Action</th>
+                                        <th width="5%">
+                                            ID
+                                        </th>
+                                        <th>Action</th>
 
 
-                                    <th>
-                                        Siswa
-                                    </th>
+                                        <th>
+                                            Siswa
+                                        </th>
+                                        <th>
+                                            Kelas
+                                        </th>
+                                        <th>
+                                            Sekolah
+                                        </th>
+                                        <th>
+                                            Telepon
+                                        </th>
 
-                                    <th>
-                                        Jadwal
-                                    </th>
+                                        <th>
+                                            Jadwal
+                                        </th>
 
-                                    <th>
-                                        Location
-                                    </th>
+                                        <th>
+                                            Location
+                                        </th>
 
-                                    <th>
-                                        Status
-                                    </th>
+                                        <th>
+                                            Status
+                                        </th>
 
-                                    <th>
-                                        Tgl Masuk
-                                    </th>
+                                        <th>
+                                            Tgl Masuk
+                                        </th>
 
-                                    <th>
-                                        Jadwal Waktu Masuk
-                                    </th>
-                                    <th>
-                                        Jam Masuk
-                                    </th>
+                                        <th>
+                                            Jadwal Waktu Masuk
+                                        </th>
+                                        <th>
+                                            Jam Masuk
+                                        </th>
 
-                                    <th>
-                                        Tgl Pulang
-                                    </th>
-                                    <th>
-                                        Jadwal Waktu Pulang
-                                    </th>
+                                        <th>
+                                            Tgl Pulang
+                                        </th>
+                                        <th>
+                                            Jadwal Waktu Pulang
+                                        </th>
 
-                                    <th>
-                                        Jam Pulang
-                                    </th>
+                                        <th>
+                                            Jam Pulang
+                                        </th>
 
-                                    <th>
-                                        Keterangan Masuk
-                                    </th>
-                                    <th>
-                                        Keterangan Pulang
-                                    </th>
-                                     <th>
-                                        Catatan Masuk
-                                    </th>
-                                    <th>
-                                        Catatan Pulang
-                                    </th>
+                                        <th>
+                                            Keterangan Masuk
+                                        </th>
+                                        <th>
+                                            Keterangan Pulang
+                                        </th>
+                                        <th>
+                                            Catatan Masuk
+                                        </th>
+                                        <th>
+                                            Catatan Pulang
+                                        </th>
 
-                                </tr>
+                                    </tr>
 
                                 </thead>
 
@@ -307,7 +325,7 @@
         </div>
 
     </section>
-     @include('modal.modal_add_absensi')
+    @include('modal.modal_add_absensi')
     @include('modal.modal_hapus')
 
 </div>

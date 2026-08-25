@@ -6482,6 +6482,19 @@
         },
 
         {
+          data: 'kelas',
+          name: 'kelas',
+        },
+        {
+          data: 'sekolah',
+          name: 'sekolah',
+        },
+        {
+          data: 'phone',
+          name: 'phone',
+        },
+
+        {
           data: 'jadwal_name',
           name: 'jadwal_name',
           orderable: false
@@ -6696,6 +6709,54 @@
     function hideLoading() {
       $("#loadingProgress").hide();
     }
+
+    $('#btn-export-excel').click(function() {
+
+      var params = $.param({
+
+        tanggal_mulai: $('#tanggal_mulai').val(),
+
+        tanggal_selesai: $('#tanggal_selesai').val(),
+
+        status: $('#filter_status').val(),
+
+        user_id: $('#filter_user_id').val(),
+
+        location_id: $('#filter_location_id').val(),
+
+        jadwal_id: $('#filter_jadwal_id').val()
+
+      });
+
+      window.location.href =
+        "{{ route('absensi.export.excel') }}?" + params;
+
+    });
+
+
+
+    $('#btn-export-pdf').click(function() {
+
+      var params = $.param({
+
+        tanggal_mulai: $('#tanggal_mulai').val(),
+
+        tanggal_selesai: $('#tanggal_selesai').val(),
+
+        status: $('#filter_status').val(),
+
+        user_id: $('#filter_user_id').val(),
+
+        location_id: $('#filter_location_id').val(),
+
+        jadwal_id: $('#filter_jadwal_id').val()
+
+      });
+
+      window.location.href =
+        "{{ route('absensi.export.pdf') }}?" + params;
+
+    });
   </script>
 
   @endif

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Datatables;
 use App\Absensi;
+use App\Exports\AbsensiExport;
 use App\User;
 use App\Location;
 use App\Jadwal;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
+use PDF;
 
 class AbsensiController extends Controller
 {
@@ -133,6 +136,16 @@ class AbsensiController extends Controller
                 return optional($data->user)->name ?? '';
             })
 
+            ->addColumn('kelas', function ($data) {
+                return optional(optional($data->user)->kelas)->nama_kelas ?? '';
+            })
+            ->addColumn('sekolah', function ($data) {
+                return optional(optional($data->user)->school)->school_name ?? '';
+            })
+            ->addColumn('phone', function ($data) {
+                return optional($data->user)->phone ?? '';
+            })
+
 
             ->addColumn('location_name', function ($data) {
 
@@ -209,10 +222,11 @@ class AbsensiController extends Controller
             })
 
 
+
             ->addColumn('action', function ($data) {
                 return '<center>
-                  <a onclick="editData(' . $data->id . ')" style="margin-bottom:5px;width:80px;" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a>' .
-                    '<br><a onclick="deleteData(' . $data->id . ')" style="width:80px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a></center>';
+                  <a title="Edit Data" onclick="editData(' . $data->id . ')" style="margin-bottom:5px;width:25px;" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i></a>' .
+                    '<br><a title="Hapus Data" onclick="deleteData(' . $data->id . ')" style="width:25px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i></a></center>';
             })
             ->rawColumns(['action', 'status_label'])
             ->make(true);
@@ -274,5 +288,76 @@ class AbsensiController extends Controller
     public function destroy(String $id)
     {
         return Absensi::destroy($id);
+    }
+
+
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(
+            new AbsensiExport($request),
+            'data-absensi-' . date('Y-m-d-H-i-s') . '.xlsx'
+        );
+    }
+
+
+    public function exportPdf(Request $request)
+    {
+        $query = Absensi::with([
+            'user',
+            'user.kelas',
+            'user.school',
+            'location',
+            'jadwal'
+        ]);
+
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate(
+                'tanggal_masuk',
+                '>=',
+                $request->tanggal_mulai
+            );
+        }
+
+        if ($request->filled('tanggal_selesai')) {
+            $query->whereDate(
+                'tanggal_masuk',
+                '<=',
+                $request->tanggal_selesai
+            );
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        if ($request->filled('jadwal_id')) {
+            $query->where('jadwal_id', $request->jadwal_id);
+        }
+
+        $data = $query
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $pdf = PDF::loadView(
+            'absensi.pdf',
+            [
+                'data' => $data,
+                'request' => $request
+            ]
+        );
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->stream(
+            'data-absensi-' . date('Y-m-d-H-i-s') . '.pdf'
+        );
     }
 }

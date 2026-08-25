@@ -193,5 +193,14 @@ Route::get('/jadwal_table', 'JadwalController@table')->name('jadwal.table');
 
 Route::resource('/absensi', 'AbsensiController');
 Route::get('/absensi_table', 'AbsensiController@table')->name('absensi.table');
+Route::get(
+    'absensi/export/excel',
+    'AbsensiController@exportExcel'
+)->name('absensi.export.excel');
+
+Route::get(
+    'absensi/export/pdf',
+    'AbsensiController@exportPdf'
+)->name('absensi.export.pdf');
 
 
