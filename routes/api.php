@@ -23,7 +23,7 @@ Route::prefix('v3')->group(function () {
     Route::post('/take_qrcode', 'AbsensiApiV3Controller@takeQrcode');
     Route::get('/jadwal', 'AbsensiApiV3Controller@jadwal');
     Route::post('/status_absensi', 'AbsensiApiV3Controller@status');
-    Route::get('/absensi_history', 'AbsensiApiV3Controller@history');
+    Route::post('/absensi_history', 'AbsensiApiV3Controller@history');
 });
 
 Route::prefix('v2')->group(function () {
