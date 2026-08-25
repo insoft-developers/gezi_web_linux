@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,8 @@ Route::prefix('v3')->group(function () {
     Route::post('/absensi/scan', 'AbsensiApiV3Controller@scan');
     Route::post('/take_qrcode', 'AbsensiApiV3Controller@takeQrcode');
     Route::get('/jadwal', 'AbsensiApiV3Controller@jadwal');
-    Route::post('/status_absensi','AbsensiApiV3Controller@status');
-    
-    
+    Route::post('/status_absensi', 'AbsensiApiV3Controller@status');
+    Route::get('/absensi_history', 'AbsensiApiV3Controller@history');
 });
 
 Route::prefix('v2')->group(function () {
@@ -65,7 +65,7 @@ Route::prefix('v2')->group(function () {
     Route::get('lapor_history/{id}', 'HistoryController@lapor');
     Route::get('quiz_winning_list/{userid}', 'HistoryController@QuizWinningList');
     Route::get('bank_winning_list/{userid}', 'HistoryController@BankWinningList');
-    
+
     Route::get('tryout_winning_list/{userid}', 'HistoryController@TryoutWinningList');
     Route::get('user_history_list/{userid}', 'HistoryController@userHistoryList');
 
@@ -74,14 +74,14 @@ Route::prefix('v2')->group(function () {
     Route::post('lihat_bimbingan', 'MapelController@lihatBimbingan');
     Route::post('like_post', 'MapelController@likePost');
     Route::post('materi_list', 'MapelController@materiList');
-    Route::get('testing', 'MapelController@testing'); 
+    Route::get('testing', 'MapelController@testing');
     Route::post('tobk', 'MapelController@tobkList');
     Route::post('tobk_video', 'MapelController@tobkVideoList');
     Route::post('lihat_tobk', 'MapelController@lihatTobk');
 
     Route::get('tryout/{id}', 'TryoutController@index');
-    
-    
+
+
     Route::get('tryout_detail/{id}', 'TryoutController@detail');
     Route::post('tryout_session', 'TryoutController@tryoutSession');
     Route::post('tryout_answer', 'TryoutController@tryoutAnswer');
@@ -110,7 +110,7 @@ Route::prefix('v2')->group(function () {
     Route::post('notif_send', 'NotifController@send');
     Route::post('notif_count', 'NotifController@count');
     Route::post('notif_read', 'NotifController@read');
-    Route::post('notif_token', 'NotifController@fcmToken'); 
+    Route::post('notif_token', 'NotifController@fcmToken');
     Route::post('notif_chat', 'NotifController@chat');
     Route::post('user_chat', 'NotifController@userChat');
     Route::post('chat_room', 'NotifController@chatRoom');
@@ -123,9 +123,8 @@ Route::prefix('v2')->group(function () {
 
     Route::post('ref_list', 'SliderController@refList');
     Route::post('user_detail', 'UserController@userDetail');
-    
-    Route::get('dms', 'UserController@dms');
 
+    Route::get('dms', 'UserController@dms');
 });
 
 
@@ -175,7 +174,7 @@ Route::post('add_comment', 'MapelController@addComment');
 Route::post('lihat_bimbingan', 'MapelController@lihatBimbingan');
 Route::post('like_post', 'MapelController@likePost');
 Route::post('materi_list', 'MapelController@materiList');
-Route::get('testing', 'MapelController@testing'); 
+Route::get('testing', 'MapelController@testing');
 Route::post('tobk', 'MapelController@tobkList');
 Route::post('tobk_video', 'MapelController@tobkVideoList');
 Route::post('lihat_tobk', 'MapelController@lihatTobk');
@@ -209,7 +208,7 @@ Route::post('question_update', 'QuestionController@update');
 Route::post('notif_send', 'NotifController@send');
 Route::post('notif_count', 'NotifController@count');
 Route::post('notif_read', 'NotifController@read');
-Route::post('notif_token', 'NotifController@fcmToken'); 
+Route::post('notif_token', 'NotifController@fcmToken');
 Route::post('notif_chat', 'NotifController@chat');
 Route::post('user_chat', 'NotifController@userChat');
 Route::post('chat_room', 'NotifController@chatRoom');
@@ -221,5 +220,3 @@ Route::post('check_active_user', 'ContactController@checkActiveUser');
 Route::post('send_email', 'UserController@sendEmail');
 
 Route::post('ref_list', 'SliderController@refList');
-
-

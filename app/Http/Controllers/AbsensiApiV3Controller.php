@@ -278,4 +278,58 @@ class AbsensiApiV3Controller extends Controller
             'data'    => $absensi
         ]);
     }
+
+    public function history(Request $request)
+    {
+        $request->validate([
+            'user_id'         => 'required|integer',
+            'jadwal_id'       => 'nullable|integer',
+            'tanggal_mulai'   => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'page'            => 'nullable|integer|min:1',
+        ]);
+
+        $query = Absensi::where('user_id', $request->user_id);
+
+        // Filter jadwal
+        if ($request->filled('jadwal_id')) {
+            $query->where('jadwal_id', $request->jadwal_id);
+        }
+
+        // Filter tanggal mulai
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate(
+                'tanggal_masuk',
+                '>=',
+                $request->tanggal_mulai
+            );
+        }
+
+        // Filter tanggal selesai
+        if ($request->filled('tanggal_selesai')) {
+            $query->whereDate(
+                'tanggal_masuk',
+                '<=',
+                $request->tanggal_selesai
+            );
+        }
+
+        $absensi = $query
+            ->orderBy('tanggal_masuk', 'desc')
+            ->orderBy('jam_masuk', 'desc')
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => $absensi->items(),
+
+            'pagination' => [
+                'current_page' => $absensi->currentPage(),
+                'per_page'     => $absensi->perPage(),
+                'total'        => $absensi->total(),
+                'last_page'    => $absensi->lastPage(),
+                'has_more'     => $absensi->hasMorePages(),
+            ],
+        ]);
+    }
 }
