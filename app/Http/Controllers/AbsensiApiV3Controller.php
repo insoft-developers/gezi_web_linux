@@ -289,7 +289,7 @@ class AbsensiApiV3Controller extends Controller
             'page'            => 'nullable|integer|min:1',
         ]);
 
-        $query = Absensi::where('user_id', $request->user_id);
+        $query = Absensi::with(['jadwal', 'location'])->where('user_id', $request->user_id);
 
         // Filter jadwal
         if ($request->filled('jadwal_id')) {
