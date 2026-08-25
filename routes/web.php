@@ -11,6 +11,7 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'HomeController@index')->name('default');
 Route::resource('/location', 'LocationController');
@@ -189,5 +190,8 @@ Route::post('/generate_location_code', 'LocationController@generate');
 
 Route::resource('/jadwal', 'JadwalController');
 Route::get('/jadwal_table', 'JadwalController@table')->name('jadwal.table');
+
+Route::resource('/absensi', 'AbsensiController');
+Route::get('/absensi_table', 'AbsensiController@table')->name('absensi.table');
 
 

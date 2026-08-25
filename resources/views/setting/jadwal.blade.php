@@ -5,13 +5,13 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Settings
+        Jadwal Absensi
         
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('default') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="#">Settings</a></li>
-        <li class="active">Jadwal Absen</li>
+        <li><a href="#">Absensi</a></li>
+        <li class="active">Jadwal Absensi</li>
       </ol>
     </section>
 
@@ -22,7 +22,7 @@
          
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Jadwal Absen</h3>
+              <h3 class="box-title">Jadwal Absensi</h3>
               <button onclick="addData()" style="float:right;" class="btn btn-success btn-xs"><i class="fa fa-plus"></i> Add</button>
             </div>
             <!-- /.box-header -->

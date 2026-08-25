@@ -12,19 +12,23 @@ use Yajra\DataTables\Datatables;
 
 class JadwalController extends Controller
 {
-    
-    
+
+
     public function table()
     {
         $data = Jadwal::all();
         return Datatables::of($data)
-            ->addColumn('action', function($data){
+            ->addColumn('is_active', function ($data) {
+                return $data->is_active
+                    ? '<span class="badge bg-green">Aktif</span>'
+                    : '<span class="badge bg-red">Tidak Aktif</span>';
+            })
+            ->addColumn('action', function ($data) {
                 return '<center>
-                  <a onclick="editData('. $data->id.')" style="margin-bottom:5px;width:80px;" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a>'.
-                '<br><a onclick="deleteData('. $data->id.')" style="width:80px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a></center>';
-        })->rawColumns(['action'])
-        ->make(true);
-    
+                  <a onclick="editData(' . $data->id . ')" style="margin-bottom:5px;width:80px;" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a>' .
+                    '<br><a onclick="deleteData(' . $data->id . ')" style="width:80px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a></center>';
+            })->rawColumns(['action', 'is_active'])
+            ->make(true);
     }
     /**
      * Display a listing of the resource.
@@ -33,7 +37,7 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        if(! Session::has('id')) {
+        if (! Session::has('id')) {
             return Redirect(route('login'));
         }
         $view = 'jadwal';
@@ -59,11 +63,11 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        
+
         Jadwal::create($input);
 
         return response()->json([
-            'success'=>true
+            'success' => true
         ]);
     }
 
@@ -101,12 +105,12 @@ class JadwalController extends Controller
     {
         $input = $request->all();
         $data = Jadwal::find($id);
-        
-        
+
+
         $data->update($input);
-        
+
         return response()->json([
-            'success'=>true
+            'success' => true
         ]);
     }
 
@@ -120,7 +124,7 @@ class JadwalController extends Controller
     {
         Jadwal::destroy($id);
         return response()->json([
-            'success'=>true
+            'success' => true
 
         ]);
     }

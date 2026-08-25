@@ -57,9 +57,15 @@ $dms = "";
 $subject = "";
 $jadwal = "";
 
+$absensiMenu = "";
+$absensi = "";
+
 @endphp
 
+
 <?php
+    $view = null;
+
     if($view == 'dashboard') {
         $dashboard = "active"; 
     }
@@ -258,7 +264,7 @@ $jadwal = "";
     }
     
     if($view == 'jadwal') {
-        $setting = "active";
+        $absensiMenu = "active";
         $jadwal = "active";
     }
     
@@ -296,6 +302,23 @@ $jadwal = "";
             <li class="{{$news}}"><a href="{{ url('news') }}"><i class="fa fa-circle-o"></i> News</a></li>
             <li class="{{$ref}}"><a href="{{ url('ref') }}"><i class="fa fa-circle-o"></i> Reference</a></li>
           </ul>
+        </li>
+
+        <li class="treeview {{$absensiMenu}}">
+          <a href="#">
+            <i class="fa fa-qrcode"></i>
+            <span>Absensi</span>
+             <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+           
+               
+            <li class="{{$jadwal}}"><a href="{{ url('jadwal') }}"><i class="fa fa-circle-o"></i> Jadwal Absen</a></li>
+            <li class="{{$absensi}}"><a href="{{ url('absensi') }}"><i class="fa fa-circle-o"></i> Absensi List</a></li>
+
+            </ul>
         </li>
       
        
@@ -436,8 +459,7 @@ $jadwal = "";
             <li class="{{$sett}}"><a href="{{ url('setting') }}"><i class="fa fa-circle-o"></i> General Setting</a></li>
             <li class="{{$location}}"><a href="{{ url('location') }}"><i class="fa fa-circle-o"></i> Location</a></li>
             
-            
-            <li class="{{$jadwal}}"><a href="{{ url('jadwal') }}"><i class="fa fa-circle-o"></i> Jadwal Absen</a></li>
+         
             
             <li class="{{$dms}}"><a href="{{ url('dashboard_menu_setting') }}"><i class="fa fa-circle-o"></i> Dashboard Menu Setting</a></li>
             
