@@ -24,4 +24,14 @@ class Absensi extends Model
         return $this->belongsTo(Location::class, 'location_id', 'id');
         
     }
+
+    public function hostMasuk():BelongsTo
+    {
+        return $this->belongsTo(User::class, 'host_id', 'id');
+    }
+
+    public function hostPulang():BelongsTo
+    {
+        return $this->belongsTo(User::class, 'host_id_pulang', 'id');
+    }
 }

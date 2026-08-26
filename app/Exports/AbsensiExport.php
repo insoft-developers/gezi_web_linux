@@ -26,7 +26,9 @@ class AbsensiExport implements FromQuery, WithHeadings, WithMapping
             'user.kelas',
             'user.school',
             'location',
-            'jadwal'
+            'jadwal',
+            'hostMasuk',
+            'hostPulang'
         ]);
 
         if ($request->filled('tanggal_mulai')) {
@@ -75,7 +77,7 @@ class AbsensiExport implements FromQuery, WithHeadings, WithMapping
             'Jadwal',
             'Jam Jadwal Masuk',
             'Jam Jadwal Pulang',
-            'Location',
+            'Cabang',
             'Status',
             'Tanggal Masuk',
             'Jam Masuk',
@@ -89,7 +91,8 @@ class AbsensiExport implements FromQuery, WithHeadings, WithMapping
             'Longitude Pulang',
             'Alasan Masuk',
             'Alasan Pulang',
-            'Host ID',
+            'Host Masuk',
+            'Host Pulang'
         ];
     }
 
@@ -150,7 +153,9 @@ class AbsensiExport implements FromQuery, WithHeadings, WithMapping
 
             $data->alasan_pulang,
 
-            $data->host_id,
+            optional($data->hostMasuk)->name ?? '',
+
+            optional($data->hostPulang)->name ?? ''
         ];
     }
 }

@@ -190,27 +190,49 @@ class AbsensiController extends Controller
             })
 
 
-            ->addColumn('koordinat_masuk', function ($data) {
+            ->addColumn('latitude_masuk', function ($row) {
+                if ($row->latitude_masuk && $row->longitude_masuk) {
+                    $url = "https://www.google.com/maps/search/?api=1&query={$row->latitude_masuk},{$row->longitude_masuk}";
 
-                if (!$data->latitude_masuk || !$data->longitude_masuk) {
-                    return '-';
+                    return '
+            <div style="text-align:center">
+                <a href="' .
+                        $url .
+                        '" target="_blank" class="text-primary fw-bold">
+                    ' .
+                        $row->latitude_masuk .
+                        ' , ' .
+                        $row->longitude_masuk .
+                        '
+                </a>
+            </div>
+        ';
+                } else {
+                    return '<div style="text-align:center">-</div>';
                 }
-
-                return $data->latitude_masuk .
-                    ', ' .
-                    $data->longitude_masuk;
             })
 
 
-            ->addColumn('koordinat_pulang', function ($data) {
+            ->addColumn('latitude_pulang', function ($row) {
+                if ($row->latitude_pulang && $row->longitude_pulang) {
+                    $url = "https://www.google.com/maps/search/?api=1&query={$row->latitude_pulang},{$row->longitude_pulang}";
 
-                if (!$data->latitude_pulang || !$data->longitude_pulang) {
-                    return '-';
+                    return '
+            <div style="text-align:center">
+                <a href="' .
+                        $url .
+                        '" target="_blank" class="text-primary fw-bold">
+                    ' .
+                        $row->latitude_pulang .
+                        ' , ' .
+                        $row->longitude_pulang .
+                        '
+                </a>
+            </div>
+        ';
+                } else {
+                    return '<div style="text-align:center">-</div>';
                 }
-
-                return $data->latitude_pulang .
-                    ', ' .
-                    $data->longitude_pulang;
             })
 
             ->addColumn('waktu_masuk', function ($data) {
@@ -221,6 +243,13 @@ class AbsensiController extends Controller
                 return optional($data->jadwal)->jam_pulang ?? '';
             })
 
+            ->addColumn('host_id', function ($data) {
+                return optional($data->hostMasuk)->name ?? '';
+            })
+
+            ->addColumn('host_id_pulang', function ($data) {
+                return optional($data->hostPulang)->name ?? '';
+            })
 
 
             ->addColumn('action', function ($data) {
@@ -228,7 +257,7 @@ class AbsensiController extends Controller
                   <a title="Edit Data" onclick="editData(' . $data->id . ')" style="margin-bottom:5px;width:25px;" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i></a>' .
                     '<br><a title="Hapus Data" onclick="deleteData(' . $data->id . ')" style="width:25px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i></a></center>';
             })
-            ->rawColumns(['action', 'status_label'])
+            ->rawColumns(['action', 'status_label', 'latitude_masuk', 'latitude_pulang'])
             ->make(true);
     }
 

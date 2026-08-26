@@ -77,7 +77,7 @@
         <th>Nama</th>
         <th>Kelas</th>
         <th>Jadwal</th>
-        <th>Location</th>
+        <th>Cabang</th>
         <th>Status</th>
         <th>Tgl Masuk</th>
         <th>Jam Masuk</th>
@@ -85,6 +85,10 @@
         <th>Tgl Pulang</th>
         <th>Jam Pulang</th>
         <th>Keterangan</th>
+        <th>Catatan Masuk</th>
+        <th>Catatan Pulang</th>
+        <th>Host Masuk</th>
+        <th>Host Pulang</th>
 
     </tr>
 
@@ -159,6 +163,10 @@
         <td>
             {{ $absensi->keterangan_pulang ?: '-' }}
         </td>
+        <td>{{ $absensi->alasan_masuk ?? '' }}</td>
+        <td>{{ $absensi->alasan_pulang ?? '' }}</td>
+        <td>{{ optional($absensi->hostMasuk)->name ?? '' }}</td>
+        <td>{{ optional($absensi->hostPulang)->name ?? '' }}</td>
 
     </tr>
 
