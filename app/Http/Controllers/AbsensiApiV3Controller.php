@@ -78,7 +78,8 @@ class AbsensiApiV3Controller extends Controller
                 ], 422);
             }
 
-            $data = $location->qrcode;
+
+            $data = $location->qrcode . '|' . $user->id;
             return response()->json([
                 'success' => true,
                 'data' => $data
@@ -132,7 +133,22 @@ class AbsensiApiV3Controller extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $location = Location::where('qrcode', $request->qrcode)->first();
+        $parts = explode('|', $request->qrcode);
+
+        if (count($parts) !== 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR Code tidak valid.',
+            ], 422);
+        }
+
+        $locationQr = $parts[0];
+        $teacherId = $parts[1];
+
+        // $location = Location::where('qrcode', $request->qrcode)->first();
+        $location = Location::where('qrcode', $locationQr)->first();
+
+        
 
         if (!$location) {
             return response()->json([
@@ -147,12 +163,12 @@ class AbsensiApiV3Controller extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ((int) $location->id !== (int) $locationId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Scan gagal. QR Code bukan untuk lokasi Anda.'
-            ], 422);
-        }
+        // if ((int) $location->id !== (int) $locationId) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Scan gagal. QR Code bukan untuk lokasi Anda.'
+        //     ], 422);
+        // }
 
         /*
         |--------------------------------------------------------------------------
@@ -217,6 +233,8 @@ class AbsensiApiV3Controller extends Controller
                 'longitude_masuk'   => $input['longitude'],
 
                 'keterangan_masuk'  => $keteranganMasuk,
+                'host_id'           => $teacherId,
+
             ]);
 
             return response()->json([
@@ -268,6 +286,7 @@ class AbsensiApiV3Controller extends Controller
             'longitude_pulang'   => $input['longitude'],
 
             'keterangan_pulang'  => $keteranganPulang,
+            'host_id_pulang'     => $teacherId,
         ]);
 
 

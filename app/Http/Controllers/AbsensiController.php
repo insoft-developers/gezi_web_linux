@@ -147,7 +147,7 @@ class AbsensiController extends Controller
             })
 
 
-            ->addColumn('location_name', function ($data) {
+            ->addColumn('location_id', function ($data) {
 
                 return optional($data->location)->name ?? '';
             })

@@ -244,8 +244,6 @@
                                             ID
                                         </th>
                                         <th>Action</th>
-
-
                                         <th>
                                             Siswa
                                         </th>
@@ -264,7 +262,13 @@
                                         </th>
 
                                         <th>
-                                            Location
+                                            Cabang
+                                        </th>
+                                        <th>
+                                            Lokasi Masuk
+                                        </th>
+                                        <th>
+                                            Lokasi Pulang
                                         </th>
 
                                         <th>
@@ -304,6 +308,12 @@
                                         </th>
                                         <th>
                                             Catatan Pulang
+                                        </th>
+                                        <th>
+                                            Host Masuk
+                                        </th>
+                                        <th>
+                                            Host Pulang
                                         </th>
 
                                     </tr>

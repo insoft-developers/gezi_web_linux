@@ -6501,8 +6501,18 @@
         },
 
         {
-          data: 'location_name',
-          name: 'location_name',
+          data: 'location_id',
+          name: 'location_id',
+          orderable: false
+        },
+        {
+          data: 'latitude_masuk',
+          name: 'latitude_masuk',
+          orderable: false
+        },
+        {
+          data: 'latitude_pulang',
+          name: 'latitude_pulang',
           orderable: false
         },
 
@@ -6561,6 +6571,16 @@
         {
           data: 'alasan_pulang',
           name: 'alasan_pulang',
+          defaultContent: '-'
+        },
+        {
+          data: 'host_id',
+          name: 'host_id',
+          defaultContent: '-'
+        },
+        {
+          data: 'host_id_pulang',
+          name: 'host_id_pulang',
           defaultContent: '-'
         }
 
