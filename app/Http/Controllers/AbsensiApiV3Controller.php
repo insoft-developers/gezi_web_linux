@@ -148,7 +148,7 @@ class AbsensiApiV3Controller extends Controller
         // $location = Location::where('qrcode', $request->qrcode)->first();
         $location = Location::where('qrcode', $locationQr)->first();
 
-        
+
 
         if (!$location) {
             return response()->json([
@@ -201,7 +201,11 @@ class AbsensiApiV3Controller extends Controller
 
         if ($request->jenis === 'masuk') {
 
-            if ($absensi) {
+
+
+
+            if ($jadwal->name !== 'BTS' && $absensi) {
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda sudah melakukan absen masuk.'
@@ -225,7 +229,7 @@ class AbsensiApiV3Controller extends Controller
                 'jadwal_id'         => $request->jadwal_id,
                 'location_id'       => $locationId,
                 'user_id'           => $user->id,
-                'status'            => 1,
+                'status'            => $jadwal->name == 'BTS' ? 0 : 1,
                 'tanggal_masuk'     => $tanggal,
                 'jam_masuk'         => $jamSekarang->format('H:i:s'),
 
