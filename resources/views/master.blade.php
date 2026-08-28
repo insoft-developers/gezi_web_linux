@@ -63,8 +63,6 @@
       border-radius: 19px;
       color: white;
     }
-
-    .input-select2 {}
   </style>
 </head>
 
@@ -239,6 +237,26 @@
   @endif
   <!-- AdminLTE for demo purposes -->
   <script src="{{ asset('theme') }}/dist/js/demo.js"></script>
+
+  <script src="{{ asset('theme') }}/plugins/ckeditor/ckeditor.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathlive"></script>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [
+          ['\\(', '\\)']
+        ],
+        displayMath: [
+          ['\\[', '\\]']
+        ]
+      }
+    };
+
+    CKEDITOR.config.versionCheck = false;
+  </script>
+
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
   @if($view == 'laporan-tryout')
@@ -944,6 +962,14 @@
 
   @if($view == 'detail-bank-soal')
   <script>
+    CKEDITOR.replace(soal);
+    CKEDITOR.replace(jawaban_a);
+    CKEDITOR.replace(jawaban_b);
+    CKEDITOR.replace(jawaban_c);
+    CKEDITOR.replace(jawaban_d);
+    CKEDITOR.replace(jawaban_e);
+
+
     function generateNomor() {
       var idbanksoal = $("#id_bank_soal").val();
       var csrf_token = $('meta[name="csrf-token"]').attr('content');
@@ -963,6 +989,11 @@
     }
 
     var table = $('#bank_soal_detail_table').DataTable({
+      drawCallback: function() {
+        if (window.MathJax) {
+          MathJax.typesetPromise();
+        }
+      },
       dom: 'Blfrtip',
       buttons: [
         'copy', 'csv', 'excel', 'pdf', 'print'
@@ -1047,12 +1078,14 @@
           $('#id').val(data.id);
           $("#id_bank_soal").val(data.id_bank_soal);
           $("#no_soal").val(data.no_soal);
-          $("#soal").val(data.soal);
-          $("#jawaban_a").val(data.jawaban_a);
-          $("#jawaban_b").val(data.jawaban_b);
-          $("#jawaban_c").val(data.jawaban_c);
-          $("#jawaban_d").val(data.jawaban_d);
-          $("#jawaban_e").val(data.jawaban_e);
+
+          CKEDITOR.instances.soal.setData(data.soal);
+          CKEDITOR.instances.jawaban_a.setData(data.jawaban_a);
+          CKEDITOR.instances.jawaban_b.setData(data.jawaban_b);
+          CKEDITOR.instances.jawaban_c.setData(data.jawaban_c);
+          CKEDITOR.instances.jawaban_d.setData(data.jawaban_d);
+          CKEDITOR.instances.jawaban_e.setData(data.jawaban_e);
+
           $("#score").val(data.score);
           $("#is_active").val(data.is_active);
           $("#kunci_jawaban").val(data.kunci_jawaban);
@@ -1065,6 +1098,8 @@
     }
 
 
+
+
     $("#form-simpan").submit(function(e) {
       $("#loadingProgress").show();
       e.preventDefault();
@@ -1072,7 +1107,21 @@
       if (save_method == "add") url = "{{ url('banksoal_detail_add') }}";
       else url = "{{ url('banksoal_detail_update') .'/'}}" + id;
 
+      var ckSoal = CKEDITOR.instances.soal.getData();
+      var ckJawabanA = CKEDITOR.instances.jawaban_a.getData();
+      var ckJawabanB = CKEDITOR.instances.jawaban_b.getData();
+      var ckJawabanC = CKEDITOR.instances.jawaban_c.getData();
+      var ckJawabanD = CKEDITOR.instances.jawaban_d.getData();
+      var ckJawabanE = CKEDITOR.instances.jawaban_e.getData();
+
       var form_data = new FormData($('#modal-add form')[0]);
+      form_data.append('soal', ckSoal);
+      form_data.append('jawaban_a', ckJawabanA);
+      form_data.append('jawaban_b', ckJawabanB);
+      form_data.append('jawaban_c', ckJawabanC);
+      form_data.append('jawaban_d', ckJawabanD);
+      form_data.append('jawaban_e', ckJawabanE);
+
       $.ajax({
         url: url,
         type: "POST",
@@ -1373,6 +1422,14 @@
           name: 'target_score'
         },
         {
+          data: 'is_random_question',
+          name: 'is_random_question'
+        },
+        {
+          data: 'is_random_answer',
+          name: 'is_random_answer'
+        },
+        {
           data: 'jumlah_soal',
           name: 'jumlah_soal'
         },
@@ -1389,6 +1446,25 @@
       $('input[name=_method]').val('POST');
       $(".modal-title").text("Add Bank Soal");
       $("#modal-add").modal("show");
+      generateUrutan("banksoal");
+    }
+
+
+    function generateUrutan(jenis) {
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      $.ajax({
+        url: "{{ route('generate.urutan') }}",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          "jenis": jenis,
+          "_token": csrf_token
+        },
+        success: function(data) {
+          console.log(data);
+          $("#urutan").val(data);
+        }
+      });
     }
 
 
@@ -1418,6 +1494,8 @@
           $("#warna_jawaban").val(data.data.warna_jawaban).trigger('change');
           $("#warna_tulisan_jawaban").val(data.data.warna_tulisan_jawaban).trigger('change');
           $("#urutan").val(data.data.urutan);
+          $("#is_random_question").val(data.data.is_random_question);
+          $("#is_random_answer").val(data.data.is_random_answer);
 
           $("#id_kelas").html(data.kelas);
 

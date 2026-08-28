@@ -177,6 +177,8 @@
                   <th width="10%">Repeated</th>
                   <th width="10%">Skipped</th>
                   <th width="10%">Target</th>
+                  <th>Quest Random</th>
+                  <th>Ans Random</th>
                   <th width="10%">Soal</th>
                  
                 </tr>

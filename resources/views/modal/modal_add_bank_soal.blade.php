@@ -78,6 +78,29 @@
                   </div>
               </div>
           </div>
+
+          <div class="row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label>Is Random Question</label>
+                      <select class="form-control" id="is_random_question" name="is_random_question" required>
+                          <option value=""> - Pilih - </option>
+                          <option value="1">Yes</option>
+                          <option value="0">No</option> 
+                      </select>
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label>Is Random Answer</label>
+                      <select class="form-control" id="is_random_answer" name="is_random_answer" required>
+                          <option value=""> - Pilih - </option>
+                          <option value="1">Yes</option>
+                          <option value="0">No</option> 
+                      </select>
+                  </div>
+              </div>
+          </div>
           
            <div class="row"  style="margin-top:15px;">
               <div class="col-md-12">

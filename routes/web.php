@@ -204,3 +204,6 @@ Route::get(
 )->name('absensi.export.pdf');
 
 
+Route::post('generate_urutan', 'WebBankSoalController@generateUrutan')->name('generate.urutan');
+
+
