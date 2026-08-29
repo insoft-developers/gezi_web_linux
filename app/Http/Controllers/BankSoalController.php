@@ -469,6 +469,8 @@ class BankSoalController extends Controller
                     $row['warna_jawaban'] = $key->warna_jawaban;
                     $row['warna_tulisan_jawaban'] =
                         $key->warna_tulisan_jawaban;
+                    $row['is_random_question'] = $key->is_random_question;
+                    $row['is_random_answer'] = $key->is_random_answer;
     
                     $rows[] = $row;
                 }
