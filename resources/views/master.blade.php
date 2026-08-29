@@ -801,19 +801,37 @@
 
 
   @if($view == 'banksoal-exam')
+
+
   <script>
+    $("#filter_siswa").select2();
+    $("#filter_lokasi").select2();
+    $("#filter_sekolah").select2();
+    $("#filter_kelas").select2();
+    $("#filter_lulus").select2();
+
     var table = $('#banksoal_exam_table').DataTable({
-      dom: 'Blfrtip',
-      buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
-      ],
+
       lengthMenu: [
         [10, 25, 50, -1],
         [10, 25, 50, 'All'],
       ],
       processing: true,
       serverSide: true,
-      ajax: "{{ route('bankSoalExamTable', $banksoal->id) }}",
+
+      ajax: {
+        url: "{{ route('bankSoalExamTable', $banksoal->id) }}",
+        type: "GET",
+        data: function(d) {
+          d.date_start = $('#filter_date_start').val();
+          d.date_end = $('#filter_date_end').val();
+          d.siswa_id = $("#filter_siswa").val();
+          d.location_id = $('#filter_lokasi').val();
+          d.sekolah_id = $('#filter_sekolah').val();
+          d.kelas_id = $('#filter_kelas').val();
+          d.lulus_id = $("#filter_lulus").val();
+        }
+      },
       order: [
         [0, "desc"]
       ],
@@ -821,6 +839,17 @@
           data: 'id',
           name: 'id'
         },
+        {
+          data: 'detail',
+          name: 'detail',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'created_at',
+          name: 'created_at'
+        },
+
         {
           data: 'judul',
           name: 'judul'
@@ -865,18 +894,74 @@
           data: 'resume',
           name: 'resume'
         },
-        {
-          data: 'created_at',
-          name: 'created_at'
-        },
-        {
-          data: 'detail',
-          name: 'detail',
-          orderable: false,
-          searchable: false
-        }
+
       ]
     });
+
+
+    $("#btn_filter").click(function() {
+      table.ajax.reload(null, false);
+    });
+
+    $('#btn_reset_filter').click(function() {
+      $("#filter_date_start").val('');
+      $("#filter_date_end").val('');
+      $("#filter_sekolah").val('').trigger('change');
+      $("#filter_lokasi").val('').trigger('change')
+      $('#filter_kelas').val('').trigger('change');
+      $("#filter_siswa").val('').trigger('change');
+      $("#filter_lulus").val('').trigger('change');
+      table.ajax.reload();
+    });
+
+    function exportExcel() {
+
+      let url = "{{ route('bankSoalExamExport', $banksoal->id) }}";
+
+      let params = new URLSearchParams();
+
+      let dateStart = $('#filter_date_start').val();
+      let dateEnd = $('#filter_date_end').val();
+
+      let siswaId = $('#filter_siswa').val();
+      let locationId = $('#filter_lokasi').val();
+      let sekolahId = $('#filter_sekolah').val();
+      let kelasId = $('#filter_kelas').val();
+      let lulusId = $('#filter_lulus').val();
+
+
+      if (dateStart) {
+        params.append('date_start', dateStart);
+      }
+
+      if (dateEnd) {
+        params.append('date_end', dateEnd);
+      }
+
+      if (siswaId) {
+        params.append('siswa_id', siswaId);
+      }
+
+      if (locationId) {
+        params.append('location_id', locationId);
+      }
+
+      if (sekolahId) {
+        params.append('sekolah_id', sekolahId);
+      }
+
+      if (kelasId) {
+        params.append('kelas_id', kelasId);
+      }
+
+      if (lulusId) {
+        params.append('lulus_id', lulusId);
+      }
+
+
+      window.location.href =
+        url + '?' + params.toString();
+    }
 
 
     function listData(id) {
@@ -1610,34 +1695,12 @@
 
   @if($view == 'exquiz')
   <script>
-    function count_records() {
-      var id = "{{ Request::segment(2) }}";
-      var awal = $("#tanggal_awal").val();
-      var akhir = $("#tanggal_akhir").val();
-      var csrf_token = $('meta[name="csrf-token"]').attr('content');
-      if (awal == '' || akhir == '') {
-        alert('Tanggal awal atau tanggal akhir tidak boleh kosong... ');
-      } else {
-        $("#loadingProgress").show();
-        $.ajax({
-          url: "{{ route('count.quiz.record') }}",
-          dataType: "JSON",
-          type: "POST",
-          data: {
-            "id": id,
-            "awal": awal,
-            "akhir": akhir,
-            "_token": csrf_token
-          },
-          success: function(data) {
-            $("#loadingProgress").hide();
-            console.log(data);
-            $("#start_record").val(0);
-            $("#last_record").val(data);
-          }
-        })
-      }
-    }
+    $("#filter_siswa").select2();
+    $("#filter_lokasi").select2();
+    $("#filter_sekolah").select2();
+    $("#filter_kelas").select2();
+    $("#filter_lulus").select2();
+
 
     function detailData(id) {
       var csrf_token = $('meta[name="csrf-token"]').attr('content');
@@ -1662,115 +1725,155 @@
       window.location = "{{ url('sess_quiz') }}" + "/" + id;
     }
 
-    // initTable("0","0");
 
-    function tampilkan_laporan_session() {
 
-      var awal = $("#tanggal_awal").val();
-      var akhir = $("#tanggal_akhir").val();
+    $("#btn_filter").click(function() {
+      sessTable.ajax.reload(null, false);
+    });
 
-      if (awal == '') {
-        awal = 0;
-      } else {
-        awal = $("#tanggal_awal").val();
+    $('#btn_reset_filter').click(function() {
+      $("#filter_date_start").val('');
+      $("#filter_date_end").val('');
+      $("#filter_sekolah").val('').trigger('change');
+      $("#filter_lokasi").val('').trigger('change')
+      $('#filter_kelas').val('').trigger('change');
+      $("#filter_siswa").val('').trigger('change');
+      $("#filter_lulus").val('').trigger('change');
+      sessTable.ajax.reload();
+    });
+
+    function exportExcel() {
+
+      let url = "{{ route('sess_quiz.export', $ids) }}";
+
+      let params = new URLSearchParams();
+
+      let dateStart = $('#filter_date_start').val();
+      let dateEnd = $('#filter_date_end').val();
+      let siswaId = $('#filter_siswa').val();
+      let locationId = $('#filter_location').val();
+      let sekolahId = $('#filter_sekolah').val();
+      let kelasId = $('#filter_kelas').val();
+      let lulusId = $('#filter_lulus').val();
+
+      if (dateStart) {
+        params.append('date_start', dateStart);
       }
 
-      if (akhir == '') {
-        akhir = 0;
-      } else {
-        akhir = $("#tanggal_akhir").val();
+      if (dateEnd) {
+        params.append('date_end', dateEnd);
       }
 
-      var offset = $("#start_record").val();
-      var limit = $("#last_record").val();
-      if (offset == '' || limit == '') {
-        alert('first record atau last record tidak boleh kosong!!');
-      } else {
-        $("#sessquiz_table").dataTable().fnDestroy();
-        initTable(awal, akhir, offset, limit);
+      if (siswaId) {
+        params.append('siswa_id', siswaId);
       }
 
+      if (locationId) {
+        params.append('location_id', locationId);
+      }
 
+      if (sekolahId) {
+        params.append('sekolah_id', sekolahId);
+      }
 
+      if (kelasId) {
+        params.append('kelas_id', kelasId);
+      }
 
+      if (lulusId) {
+        params.append('lulus_id', lulusId);
+      }
+
+      window.location.href = url + '?' + params.toString();
     }
 
 
-    function initTable(awal, akhir, offset, limit) {
+    var sessTable = $('#sessquiz_table').DataTable({
 
-      var ids = "{{ $ids }}";
-      var table = $('#sessquiz_table').DataTable({
-        dom: 'Blfrtip',
-        buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        lengthMenu: [
-          [10, 25, 50, -1],
-          [10, 25, 50, 'All'],
-        ],
-        processing: true,
-        serverSide: true,
-        ajax: "{{ url('sessquizTable') }}" + "/" + ids + "/" + awal + "/" + akhir + '/' + offset + '/' + limit,
-        order: [
-          [0, "desc"]
-        ],
-        columns: [{
-            data: 'id',
-            name: 'id'
-          },
-          {
-            data: 'judul',
-            name: 'judul'
-          },
-          {
-            data: 'siswa',
-            name: 'siswa'
-          },
-          {
-            data: 'nis',
-            name: 'nis'
-          },
-          {
-            data: 'school_id',
-            name: 'school_id'
-          },
-          {
-            data: 'phone',
-            name: 'phone'
-          },
-          {
-            data: 'id_kelas',
-            name: 'id_kelas'
-          },
-          {
-            data: 'target_score',
-            name: 'target_score'
-          },
-          {
-            data: 'score',
-            name: 'score'
-          },
-          {
-            data: 'time',
-            name: 'time'
-          },
-          {
-            data: 'resume',
-            name: 'resume'
-          },
-          {
-            data: 'created_at',
-            name: 'created_at'
-          },
-          {
-            data: 'action',
-            name: 'action',
-            orderable: false,
-            searchable: false
-          }
-        ]
-      });
-    }
+      lengthMenu: [
+        [10, 25, 50, -1],
+        [10, 25, 50, 'All'],
+      ],
+      processing: true,
+      serverSide: true,
+      ajax: {
+        url: "{{ route('quiz.session.table', $ids) }}",
+        type: "GET",
+        data: function(d) {
+          d.date_start = $('#filter_date_start').val();
+          d.date_end = $('#filter_date_end').val();
+          d.siswa_id = $("#filter_siswa").val();
+          d.location_id = $('#filter_lokasi').val();
+          d.sekolah_id = $('#filter_sekolah').val();
+          d.kelas_id = $('#filter_kelas').val();
+          d.lulus_id = $("#filter_lulus").val();
+        }
+      },
+      order: [
+        [0, "desc"]
+      ],
+      columns: [{
+          data: 'id',
+          name: 'id'
+        },
+        {
+          data: 'action',
+          name: 'action',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'created_at',
+          name: 'created_at'
+        },
+
+        {
+          data: 'judul',
+          name: 'judul'
+        },
+        {
+          data: 'siswa',
+          name: 'siswa'
+        },
+        {
+          data: 'location_id',
+          name: 'location_id'
+        },
+        {
+          data: 'nis',
+          name: 'nis'
+        },
+        {
+          data: 'school_id',
+          name: 'school_id'
+        },
+        {
+          data: 'phone',
+          name: 'phone'
+        },
+        {
+          data: 'id_kelas',
+          name: 'id_kelas'
+        },
+        {
+          data: 'target_score',
+          name: 'target_score'
+        },
+        {
+          data: 'score',
+          name: 'score'
+        },
+        {
+          data: 'time',
+          name: 'time'
+        },
+        {
+          data: 'resume',
+          name: 'resume'
+        },
+
+      ]
+    });
 
 
 
@@ -1998,13 +2101,26 @@
       ],
       processing: true,
       serverSide: true,
-      ajax: "{{ route('quizHeaderTable') }}",
+      ajax: {
+        url: "{{ route('quizHeaderTable') }}",
+        type: "GET",
+        data: function(d) {
+          d.kelas_id = $('#filter_kelas').val();
+          d.status_id = $("#filter_status").val();
+        }
+      },
       order: [
-        [0, "desc"]
+        [8, "asc"]
       ],
       columns: [{
           data: 'id',
           name: 'id'
+        },
+        {
+          data: 'action',
+          name: 'action',
+          orderable: false,
+          searchable: false
         },
         {
           data: 'id_kelas',
@@ -2035,17 +2151,31 @@
           name: 'urutan'
         },
         {
+          data: 'is_skipped',
+          name: 'is_skipped'
+        },
+        {
           data: 'created_at',
           name: 'created_at'
         },
-        {
-          data: 'action',
-          name: 'action',
-          orderable: false,
-          searchable: false
-        }
+
       ]
     });
+
+
+
+    $("#btn_filter").click(function() {
+      table.ajax.reload(null, false);
+    });
+
+    $('#btn_reset').click(function() {
+
+      $('#filter_kelas').val('');
+      $("#filter_status").val('');
+      table.ajax.reload();
+    });
+
+
 
 
     function addData() {
@@ -2054,6 +2184,24 @@
       $('input[name=_method]').val('POST');
       $(".modal-title").text("Add Judul Quiz");
       $("#modal-add").modal("show");
+      generateUrutan("quiz");
+    }
+
+    function generateUrutan(jenis) {
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      $.ajax({
+        url: "{{ route('generate.urutan') }}",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          "jenis": jenis,
+          "_token": csrf_token
+        },
+        success: function(data) {
+          console.log(data);
+          $("#urutan").val(data);
+        }
+      });
     }
 
 
@@ -2082,6 +2230,7 @@
           $("#warna_tulisan_soal").val(data.data.warna_tulisan_soal).trigger('change');
           $("#warna_jawaban").val(data.data.warna_jawaban).trigger('change');
           $("#warna_tulisan_jawaban").val(data.data.warna_tulisan_jawaban).trigger('change');
+          $("#is_skipped").val(data.data.is_skipped);
         },
 
       })
@@ -2165,7 +2314,7 @@
 
       $("#id_kelas").val("");
       $("#judul").val("");
-      $("#urutan").val("");
+      // $("#urutan").val("");
       $("#waktu_kuis").val("");
       $("#target_score").val("");
       $("#is_active").val("");
@@ -2174,6 +2323,7 @@
       $("#warna_tulisan_soal").val("#000000").trigger("change");
       $("#warna_jawaban").val("#FFFFFF").trigger("change");
       $("#warna_tulisan_jawaban").val("#000000").trigger("change");
+      $("#is_skipped").val("");
 
     }
 
@@ -2190,7 +2340,19 @@
 
   @if($view == 'quiz')
   <script>
+    CKEDITOR.replace('soal_kuis');
+    CKEDITOR.replace('jawaban_a');
+    CKEDITOR.replace('jawaban_b');
+    CKEDITOR.replace('jawaban_c');
+    CKEDITOR.replace('jawaban_d');
+    CKEDITOR.replace('jawaban_e');
+
     var table = $('#quiz_table').DataTable({
+      drawCallback: function() {
+        if (window.MathJax) {
+          MathJax.typesetPromise();
+        }
+      },
       dom: 'Blfrtip',
       buttons: [
         'copy', 'csv', 'excel', 'pdf', 'print'
@@ -2292,12 +2454,20 @@
           $('#id').val(data.id);
           $("#no_kuis").val(data.no_kuis);
           $("#id_kelas").val(data.id_kelas);
-          $("#soal_kuis").val(data.soal_kuis);
-          $("#jawaban_a").val(data.jawaban_a);
-          $("#jawaban_b").val(data.jawaban_b);
-          $("#jawaban_c").val(data.jawaban_c);
-          $("#jawaban_d").val(data.jawaban_d);
-          $("#jawaban_e").val(data.jawaban_e);
+          // $("#soal_kuis").val(data.soal_kuis);
+          // $("#jawaban_a").val(data.jawaban_a);
+          // $("#jawaban_b").val(data.jawaban_b);
+          // $("#jawaban_c").val(data.jawaban_c);
+          // $("#jawaban_d").val(data.jawaban_d);
+          // $("#jawaban_e").val(data.jawaban_e);
+
+          CKEDITOR.instances.soal_kuis.setData(data.soal_kuis);
+          CKEDITOR.instances.jawaban_a.setData(data.jawaban_a);
+          CKEDITOR.instances.jawaban_b.setData(data.jawaban_b);
+          CKEDITOR.instances.jawaban_c.setData(data.jawaban_c);
+          CKEDITOR.instances.jawaban_d.setData(data.jawaban_d);
+          CKEDITOR.instances.jawaban_e.setData(data.jawaban_e);
+
           $("#kunci_jawaban").val(data.kunci_jawaban);
           $("#score").val(data.score);
 
@@ -2314,10 +2484,26 @@
       var id = $('#id').val();
       if (save_method == "add") url = "{{ url('quiz') }}";
       else url = "{{ url('quiz') .'/'}}" + id;
+      var formData = new FormData($('#modal-add form')[0]);
+      var ckSoalKuis = CKEDITOR.instances.soal_kuis.getData();
+      var ckJawabanA = CKEDITOR.instances.jawaban_a.getData();
+      var ckJawabanB = CKEDITOR.instances.jawaban_b.getData();
+      var ckJawabanC = CKEDITOR.instances.jawaban_c.getData();
+      var ckJawabanD = CKEDITOR.instances.jawaban_d.getData();
+      var ckJawabanE = CKEDITOR.instances.jawaban_e.getData();
+
+      formData.append("soal_kuis", ckSoalKuis);
+      formData.append("jawaban_a", ckJawabanA);
+      formData.append("jawaban_b", ckJawabanB);
+      formData.append("jawaban_c", ckJawabanC);
+      formData.append("jawaban_d", ckJawabanD);
+      formData.append("jawaban_e", ckJawabanE);
+
+
       $.ajax({
         url: url,
         type: "POST",
-        data: new FormData($('#modal-add form')[0]),
+        data: formData,
         contentType: false,
         processData: false,
         success: function(data) {

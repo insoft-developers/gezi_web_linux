@@ -5,13 +5,13 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Quiz Session
+        Session Kompetensi Dasar
         
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('default') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="#">Quiz</a></li>
-        <li class="active">Quiz Session</li>
+        <li><a href="#">Kompetensi Dasar</a></li>
+        <li class="active">Session Kompetensi Dasar</li>
       </ol>
     </section>
 
@@ -22,7 +22,7 @@
          
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Quiz Session</h3>
+              <h3 class="box-title">Session Kompetensi Dasar</h3>
               <button onclick="addData()" style="float:right;" class="btn btn-success btn-xs"><i class="fa fa-plus"></i> Add</button>
             </div>
             <!-- /.box-header -->

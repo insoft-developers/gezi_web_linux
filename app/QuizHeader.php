@@ -3,19 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class QuizHeader extends Model
 {
-    protected $fillable = [
-        "judul",
-        "waktu_kuis",
-        "target_score",
-        "is_active",
-        "warna_soal",
-        "warna_tulisan_soal",
-        "warna_jawaban",
-        "warna_tulisan_jawaban",
-        "short_name",
-        "urutan"
-    ];
+    protected $guarded = ['id'];
+
+
+    public function session():HasMany
+    {
+        return $this->hasMany(QuizSession::class, 'id_quiz', 'id');
+    }
 }

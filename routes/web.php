@@ -105,9 +105,13 @@ Route::resource('exquiz', 'ExquizController');
 Route::get('exquizTable', 'ExquizController@exquizTable')->name('exquizTable');
 Route::get('sess_quiz/{id}', 'ExquizController@sess_quiz');
 Route::get('sess_quizes/{id}/{awal}/{akhir}', 'ExquizController@sess_quizes');
-Route::get('sessquizTable/{id}/{awal}/{akhir}/{offset}/{limit}', 'ExquizController@sessquizTable');
+Route::get('session_quiz_table/{id}', 'ExquizController@quizSessionTable')->name('quiz.session.table');
 Route::post('quiz_result', 'ExquizController@quiz_result');
 Route::post('quiz_session_delete', 'ExquizController@deleteSession');
+Route::get('/sess_quiz/export/{id}', [
+    'as' => 'sess_quiz.export',
+    'uses' => 'ExquizController@exportExcel'
+]);
 
 Route::resource('banksoal', 'WebBankSoalController');
 Route::get('banksoal_table', 'WebBankSoalController@bankSoalTable')->name('bankSoalTable');
@@ -129,6 +133,13 @@ Route::get('banksoal_session_table', 'WebBankSessionController@bankSoalSessionTa
 Route::get('list_ikut_banksoal/{id}', 'WebBankSessionController@ikutBankSoal');
 Route::get('bank_soal_exam_table/{id}', 'WebBankSessionController@bankSoalExamTable')->name('bankSoalExamTable');
 Route::get('banksoal_detail_exam/{id}', 'WebBankSessionController@detailExam');
+Route::get(
+    '/bank-soal-exam/export/{id}',
+    [
+        'as' => 'bankSoalExamExport',
+        'uses' => 'WebBankSessionController@exportExcel'
+    ]
+);
 
 Route::resource('question', 'WebQuestionController');
 Route::get('question_table', 'WebQuestionController@questionTable')->name('questionTable');

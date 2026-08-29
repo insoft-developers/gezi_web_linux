@@ -7,7 +7,7 @@ use Yajra\DataTables\Datatables;
 use App\Quiz;
 use App\Kelas;
 use App\QuizHeader;
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class WebQuizController extends Controller
 {

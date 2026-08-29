@@ -128,16 +128,7 @@
                             Export ke Excel
                         </button>
                         
-                        
-            <!--             <button-->
-            <!--    onclick="exportExcel()"-->
-            <!--    style="float:right;margin-right:5px;"-->
-            <!--    class="btn btn-primary btn-xs">-->
-            
-            <!--    <i class="fa fa-file-excel-o"></i>-->
-            <!--    Export Excel-->
-            
-            <!--</button>-->
+         
                     </div>
                 </div>
               <div class="table-responsive">

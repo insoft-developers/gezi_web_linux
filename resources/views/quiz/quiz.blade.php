@@ -5,13 +5,13 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Soal Quiz Management
+        Soal Kompetensi Dasar
         
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('default') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="#">Quiz</a></li>
-        <li><a href="{{ url('quizheader') }}">Quiz</a></li>
+        <li><a href="#">Kompetensi Dasar</a></li>
+        <li><a href="{{ url('quizheader') }}">Kompetensi Dasar</a></li>
         <li class="active">{{ $header->judul }}</li>
       </ol>
     </section>
