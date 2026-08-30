@@ -293,7 +293,7 @@ Route::prefix('v4')->group(function () {
 
         Route::get('tryout_detail/{id}', 'TryoutController@detail');
         Route::post('tryout_session', 'TryoutController@tryoutSession');
-        Route::post('tryout_answer', 'TryoutController@tryoutAnswer');
+        Route::post('tryout_answer', 'TryoutApiV3Controller@tryoutAnswer');
         Route::post('tryout_hasil', 'TryoutController@tryoutHasil');
         Route::post('tryout_report_add', 'TryoutController@tryoutReportAdd');
         Route::post('tryout_check_answer', 'TryoutController@checkAnswer');
