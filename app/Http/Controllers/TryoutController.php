@@ -107,7 +107,7 @@ class TryoutController extends Controller
     
    public function tryoutHasil(Request $request) {
        $input = $request->all();
-       $query = TryoutAnswer::where('id_session', $input['id_session'])
+       $query = TryoutAnswer::with('soal')->where('id_session', $input['id_session'])
                 ->orderBy('id', 'asc')
                 ->get();
        
@@ -161,6 +161,8 @@ class TryoutController extends Controller
            $row['id_user'] = $d->id_user;
            $row['id_soal'] = $d->id_soal;
            $row['no_soal'] = $d->no_soal;
+           $row['soal'] = optional($d->soal)->soal ?? '';
+           $row['gambar_soal'] = optional($d->soal)->gambar_soal ?? '';
            $row['jawaban_user'] = $d->jawaban_user;
            $row['waktu_selesai'] = $d->waktu_selesai;
            $row['status_jawaban'] = $d->status_jawaban;
