@@ -8,9 +8,9 @@ use App\BankSoalSession;
 use App\BankSoalAnswer;
 use App\User;
 use Illuminate\Support\Facades\Cache;
-use DB;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BanksoalApiV3Controller extends Controller
 {

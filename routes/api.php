@@ -24,6 +24,7 @@ Route::prefix('v3')->group(function () {
     Route::get('/jadwal', 'AbsensiApiV3Controller@jadwal');
     Route::post('/status_absensi', 'AbsensiApiV3Controller@status');
     Route::post('/absensi_history', 'AbsensiApiV3Controller@history');
+    Route::post('/tryout_answer', 'TryoutApiV3Controller@tryoutAnswer');
 });
 
 Route::prefix('v2')->group(function () {

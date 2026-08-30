@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TryoutSession extends Model
 {
-    protected $fillable = ['id_tryout', 'id_user'];
+    protected $guarded = ['id'];
     
     public function tryout_answers()
     {
@@ -20,6 +20,6 @@ class TryoutSession extends Model
     
     public function tryout()
     {
-        return $this->belongsTo(Tryout::class, 'id_tryout', 'id');    
+        return $this->belongsTo(TryOut::class, 'id_tryout', 'id');    
     }
 }

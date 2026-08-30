@@ -3145,18 +3145,34 @@
 
   @if($view == 'exam')
   <script>
+    $("#filter_siswa").select2();
+    $("#filter_lokasi").select2();
+    $("#filter_sekolah").select2();
+    $("#filter_kelas").select2();
+    $("#filter_lulus").select2();
+
+
     var table = $('#exam_table').DataTable({
-      dom: 'Blfrtip',
-      buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
-      ],
+
       lengthMenu: [
         [10, 25, 50, -1],
         [10, 25, 50, 'All'],
       ],
       processing: true,
       serverSide: true,
-      ajax: "{{ route('examTable', $tryout->id) }}",
+      ajax: {
+        url: "{{ route('examTable', $tryout->id) }}",
+        type: "GET",
+        data: function(d) {
+          d.date_start = $('#filter_date_start').val();
+          d.date_end = $('#filter_date_end').val();
+          d.siswa_id = $("#filter_siswa").val();
+          d.location_id = $('#filter_lokasi').val();
+          d.sekolah_id = $('#filter_sekolah').val();
+          d.kelas_id = $('#filter_kelas').val();
+          d.lulus_id = $("#filter_lulus").val();
+        }
+      },
       order: [
         [0, "desc"]
       ],
@@ -3165,12 +3181,27 @@
           name: 'id'
         },
         {
+          data: 'detail',
+          name: 'detail',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'created_at',
+          name: 'created_at'
+        },
+
+        {
           data: 'judul',
           name: 'judul'
         },
         {
           data: 'id_user',
           name: 'id_user'
+        },
+        {
+          data: 'location_id',
+          name: 'location_id'
         },
         {
           data: 'nis',
@@ -3200,18 +3231,42 @@
           data: 'resume',
           name: 'resume'
         },
-        {
-          data: 'created_at',
-          name: 'created_at'
-        },
-        {
-          data: 'detail',
-          name: 'detail',
-          orderable: false,
-          searchable: false
-        }
+
       ]
     });
+
+    $("#btn_filter").click(function() {
+      table.ajax.reload(null, false);
+    });
+
+    $('#btn_reset_filter').click(function() {
+      $("#filter_date_start").val('');
+      $("#filter_date_end").val('');
+      $("#filter_sekolah").val('').trigger('change');
+      $("#filter_lokasi").val('').trigger('change')
+      $('#filter_kelas').val('').trigger('change');
+      $("#filter_siswa").val('').trigger('change');
+      $("#filter_lulus").val('').trigger('change');
+      table.ajax.reload();
+    });
+
+    function exportExcel() {
+
+      var params = $.param({
+        date_start: $('#filter_date_start').val(),
+        date_end: $('#filter_date_end').val(),
+        siswa_id: $('#filter_siswa').val(),
+        location_id: $('#filter_lokasi').val(),
+        sekolah_id: $('#filter_sekolah').val(),
+        kelas_id: $('#filter_kelas').val(),
+        lulus_id: $('#filter_lulus').val()
+      });
+
+      window.location.href =
+        "{{ route('tryout.export', $ids) }}" +
+        "?" + params;
+    }
+
 
 
     function resetData(id) {
@@ -3320,41 +3375,6 @@
 
   @if($view == 'materi')
   <script>
-    // $("#id_kelas").change(function(){
-    //   var idKelas = $(this).val();
-    //   $("#id_mapel").val("");
-    //   $("#id_kategori").val("");
-
-    // });
-
-    // $("#id_mapel").change(function(){
-    //   var idMapel = $(this).val();
-    //   var idKelas = $("#id_kelas").val();
-    //   var csrf_token = $('meta[name="csrf-token"]').attr('content');
-    //   if(idKelas == '') {
-    //       alert("Kelas Belum Dipilih...");
-    //   } else {
-    //       $.ajax({
-    //           url : "{{ url('set_kategori_bimbingan') }}",
-    //           type : "POST",
-    //           dataType : "JSON",
-    //           data : {'idKelas':idKelas, 'idMapel':idMapel, '_token': csrf_token},
-    //           success : function(data) {
-    //               console.log(data);
-    //               var html = '';
-    //               html += '<option value=""> - Pilih Kategori - </option>';
-    //               for(var i=0; i<data.length; i++) {
-    //                     html += '<option value="'+data[i].id+'">'+data[i].category_name+'</option>';     
-    //               }
-    //               $("#id_kategori").html(html);
-
-
-    //           }
-    //       })
-    //   }
-    // });
-
-
     $("#id_kelas").select2({
       closeOnSelect: false
     }).on('select2:selecting', function(e) {
@@ -3552,6 +3572,14 @@
 
   @if($view == 'detail')
   <script>
+    CKEDITOR.replace('soal');
+    CKEDITOR.replace('jawaban_a');
+    CKEDITOR.replace('jawaban_b');
+    CKEDITOR.replace('jawaban_c');
+    CKEDITOR.replace('jawaban_d');
+    CKEDITOR.replace('jawaban_e');
+
+
     var table = $('#detail_table').DataTable({
       dom: 'Blfrtip',
       buttons: [
@@ -3611,6 +3639,26 @@
       $('input[name=_method]').val('POST');
       $(".modal-title").text("Add Quiz Detail");
       $("#modal-add").modal("show");
+      generateNomorSoal();
+
+    }
+
+
+    function generateNomorSoal() {
+      var id = "{{ $ids }}";
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      $.ajax({
+        url: "{{ route('generate.nomor.soal.tryout') }}",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          "id": id,
+          "_token": csrf_token
+        },
+        success: function(data) {
+          $("#no_soal").val(data);
+        }
+      });
     }
 
 
@@ -3631,15 +3679,16 @@
           $('#id').val(data.id);
           $("#id_tryout").val(data.id_tryout);
           $("#no_soal").val(data.no_soal);
-          $("#soal").val(data.soal);
-          $("#jawaban_a").val(data.jawaban_a);
-          $("#jawaban_b").val(data.jawaban_b);
-          $("#jawaban_c").val(data.jawaban_c);
-          $("#jawaban_d").val(data.jawaban_d);
-          $("#jawaban_e").val(data.jawaban_e);
           $("#score").val(data.score);
           $("#is_active").val(data.is_active);
           $("#kunci_jawaban").val(data.kunci_jawaban);
+
+          CKEDITOR.instances.soal.setData(data.soal);
+          CKEDITOR.instances.jawaban_a.setData(data.jawaban_a);
+          CKEDITOR.instances.jawaban_b.setData(data.jawaban_b);
+          CKEDITOR.instances.jawaban_c.setData(data.jawaban_c);
+          CKEDITOR.instances.jawaban_d.setData(data.jawaban_d);
+          CKEDITOR.instances.jawaban_e.setData(data.jawaban_e);
 
 
         }
@@ -3655,6 +3704,20 @@
       else url = "{{ url('detail_update') .'/'}}" + id;
 
       var form_data = new FormData($('#modal-add form')[0]);
+
+      var soal = CKEDITOR.instances.soal.getData();
+      var jawaban_a = CKEDITOR.instances.jawaban_a.getData();
+      var jawaban_b = CKEDITOR.instances.jawaban_b.getData();
+      var jawaban_c = CKEDITOR.instances.jawaban_c.getData();
+      var jawaban_d = CKEDITOR.instances.jawaban_d.getData();
+      var jawaban_e = CKEDITOR.instances.jawaban_e.getData();
+
+      form_data.append("soal", soal);
+      form_data.append("jawaban_a", jawaban_a);
+      form_data.append("jawaban_b", jawaban_b);
+      form_data.append("jawaban_c", jawaban_c);
+      form_data.append("jawaban_d", jawaban_d);
+      form_data.append("jawaban_e", jawaban_e);
       $.ajax({
         url: url,
         type: "POST",
@@ -3750,17 +3813,18 @@
       $("#id").val("");
       $("#no_soal").val("");
       $("#gambar_soal").val(null);
-      $("#soal").val("")
       $("#gambar_a").val(null);
-      $("#jawaban_a").val("");
       $("#gambar_b").val(null);
-      $("#jawaban_b").val("");
       $("#gambar_c").val(null);
-      $("#jawaban_c").val("");
       $("#gambar_d").val(null);
-      $("#jawaban_d").val("");
       $("#gambar_e").val(null);
-      $("#jawaban_e").val("");
+
+      CKEDITOR.instances.soal.setData('');
+      CKEDITOR.instances.jawaban_a.setData('');
+      CKEDITOR.instances.jawaban_b.setData('');
+      CKEDITOR.instances.jawaban_c.setData('');
+      CKEDITOR.instances.jawaban_d.setData('');
+      CKEDITOR.instances.jawaban_e.setData('');
       $("#kunci_jawaban").val("");
       $("#score").val("");
       $("#is_active").val("");
@@ -3915,6 +3979,14 @@
           name: 'is_skipped'
         },
         {
+          data: 'is_random_question',
+          name: 'is_random_question'
+        },
+        {
+          data: 'is_random_answer',
+          name: 'is_random_answer'
+        },
+        {
           data: 'time_limit',
           name: 'time_limit'
         },
@@ -3937,6 +4009,24 @@
       $('input[name=_method]').val('POST');
       $(".modal-title").text("Add Quiz");
       $("#modal-add").modal("show");
+      generateUrutan("tryout");
+    }
+
+    function generateUrutan(jenis) {
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      $.ajax({
+        url: "{{ route('generate.urutan') }}",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          "jenis": jenis,
+          "_token": csrf_token
+        },
+        success: function(data) {
+          console.log(data);
+          $("#urutan").val(data);
+        }
+      });
     }
 
 
@@ -3970,6 +4060,8 @@
           $("#warna_jawaban").val(data.data.warna_jawaban).trigger('change');
           $("#warna_tulisan_jawaban").val(data.data.warna_tulisan_jawaban).trigger('change');
           $("#urutan").val(data.data.urutan);
+          $("#is_random_question").val(data.data.is_random_question);
+          $("#is_random_answer").val(data.data.is_random_answer);
 
         }
       })
@@ -4056,41 +4148,6 @@
 
   @if($view == 'bimbingan')
   <script>
-    // $("#id_kelas").change(function(){
-    //   var idKelas = $(this).val();
-    //   $("#id_mapel").val("");
-    //   $("#id_kategori").val("");
-
-    // });
-
-    // $("#id_mapel").change(function(){
-    //   var idMapel = $(this).val();
-    //   var idKelas = $("#id_kelas").val();
-    //   var csrf_token = $('meta[name="csrf-token"]').attr('content');
-    //   if(idKelas == '') {
-    //       alert("Kelas Belum Dipilih...");
-    //   } else {
-    //       $.ajax({
-    //           url : "{{ url('set_kategori_bimbingan') }}",
-    //           type : "POST",
-    //           dataType : "JSON",
-    //           data : {'idKelas':idKelas, 'idMapel':idMapel, '_token': csrf_token},
-    //           success : function(data) {
-    //               console.log(data);
-    //               var html = '';
-    //               html += '<option value=""> - Pilih Kategori - </option>';
-    //               for(var i=0; i<data.length; i++) {
-    //                     html += '<option value="'+data[i].id+'">'+data[i].category_name+'</option>';     
-    //               }
-    //               $("#id_kategori").html(html);
-
-
-    //           }
-    //       })
-    //   }
-    // });
-
-
     $("#id_kelas").select2({
       closeOnSelect: false
     }).on('select2:selecting', function(e) {

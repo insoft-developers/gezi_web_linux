@@ -70,6 +70,26 @@
                   </select>
               </div>
           </div>
+
+
+          <div class="row"  style="margin-top:15px;">
+              <div class="col-md-6">
+                   <label>Is Random Question ?</label>
+                  <select id="is_random_question" name="is_random_question" class="form-control" required>
+                      <option value=""> - Pilih - </option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
+                  </select>
+              </div>
+              <div class="col-md-6">
+                  <label>Is Random Answer ?</label>
+                  <select id="is_random_answer" name="is_random_answer" class="form-control" required>
+                      <option value=""> - Pilih - </option>
+                      <option value="1">Yes</option>
+                      <option value="0">No</option>
+                  </select>
+              </div>
+          </div>
           
           <div class="row" style="margin-top:15px;">
               <div class="col-md-6">

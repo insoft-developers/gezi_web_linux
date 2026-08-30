@@ -245,6 +245,12 @@
                                     <th width="10%">
                                         Skipped
                                     </th>
+                                    <th width="10%">
+                                        Quest Random
+                                    </th>
+                                    <th width="10%">
+                                        Answer Random
+                                    </th>
 
                                     <th width="10%">
                                         Time

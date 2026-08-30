@@ -56,6 +56,7 @@ Route::get('detail_edit/{id}', 'WebTryoutController@detailEdit');
 Route::patch('detail_update/{id}', 'WebTryoutController@detailUpdate');
 Route::post('delete_image', 'WebTryoutController@deleteImage');
 Route::post('detail_delete', 'WebTryoutController@deleteDetail');
+Route::post('tryout_generate_nomor_soal', 'WebTryoutController@generateNomorSoal')->name('generate.nomor.soal.tryout');
 
 
 Route::resource('materi', 'WebMateriController');
@@ -66,6 +67,10 @@ Route::get('session_table', 'WebTryoutSessionController@sessionTable')->name('se
 Route::get('session_detail/{id}', 'WebTryoutSessionController@sessionDetail');
 Route::get('exam_table/{id}', 'WebTryoutSessionController@examTable')->name('examTable');
 Route::post('reset_tryout', 'WebTryoutSessionController@resetTryout');
+Route::get(
+    'tryout/{id}/export',
+    'WebTryoutSessionController@exportExcel'
+)->name('tryout.export');
 
 Route::get('detail_exam/{id}', 'WebTryoutSessionController@detailExam');
 Route::get('get_jenis_copy/{jenis}', 'WebTryoutController@getJenisCopy');

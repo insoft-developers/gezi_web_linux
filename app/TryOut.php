@@ -3,16 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TryOut extends Model
 {
     protected $table = 'try_outs';
-    protected $fillable = ['judul', 'subject_id', 'short_name', 'id_kelas', 'is_active', 'is_repeated', 'is_skipped', 'time_limit', 'target_score','warna_soal','warna_tulisan','warna_jawaban','warna_tulisan_jawaban', 'urutan'];
+    protected $guarded = ['id'];
     
     
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id', 'id');
+    }
+
+    public function session():HasMany
+    {
+        return $this->hasMany(TryoutSession::class, 'id_tryout', 'id');
     }
     
 }
