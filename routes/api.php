@@ -233,6 +233,8 @@ Route::prefix('v4')->group(function () {
     Route::post('pilih_sekolah', 'UserController@pilihSekolah');
     Route::post('pilih_lokasi', 'UserController@pilihLokasi');
     Route::post('upload_profil_image', 'UserController@upload');
+     Route::post('setting_login', 'SettingController@settingLogin');
+
 
     Route::middleware('auth:api')->group(function () {
         Route::post('tryout_subject', 'TryoutApiV3Controller@subject');
@@ -253,7 +255,7 @@ Route::prefix('v4')->group(function () {
         Route::post('change_password', 'UserController@changePassword');
 
 
-        Route::post('setting_login', 'SettingController@settingLogin');
+       
 
         Route::get('list_quiz/{id}', 'QuizController@list')->name('list.quiz');
         Route::post('quiz_session', 'QuizController@add_session');
