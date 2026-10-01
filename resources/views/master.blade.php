@@ -206,7 +206,7 @@
   <script src="{{ asset('theme') }}/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
   @endif
 
-  @if($view == 'subject' ||$view == 'dashboard_menu_setting' || $view == 'ref' || $view == 'school' || $view == 'laporan-tryout' || $view == 'pengumuman' || $view == 'contact' || $view == 'main-menu' || $view == 'lapor' || $view == 'question' || $view == 'banksoal-exam' || $view == 'banksoal-session' || $view == 'detail-bank-soal' || $view == 'banksoal' || $view == 'exquiz' || $view == 'quiz-header' || $view == 'quiz' || $view == 'slider' || $view == 'admin' || $view == 'information' || $view == 'promo' || $view == 'news' || $view == 'kelas' || $view == 'mapel' || $view == 'kategori' || $view == 'siswa' || $view == 'bimbingan' || $view == 'tryout' || $view == 'detail' || $view == 'materi' || $view == 'tryout-session' || $view == 'exam' || $view == 'location' || $view == 'tingkat' || $view == 'jadwal'|| $view == 'absensi')
+  @if($view == 'subject' ||$view == 'dashboard_menu_setting' || $view == 'ref' || $view == 'school' || $view == 'laporan-tryout' || $view == 'pengumuman' || $view == 'contact' || $view == 'main-menu' || $view == 'lapor' || $view == 'question' || $view == 'banksoal-exam' || $view == 'banksoal-session' || $view == 'detail-bank-soal' || $view == 'banksoal' || $view == 'exquiz' || $view == 'quiz-header' || $view == 'quiz' || $view == 'slider' || $view == 'admin' || $view == 'information' || $view == 'promo' || $view == 'news' || $view == 'kelas' || $view == 'mapel' || $view == 'kategori' || $view == 'siswa' || $view == 'bimbingan' || $view == 'tryout' || $view == 'detail' || $view == 'materi' || $view == 'tryout-session' || $view == 'exam' || $view == 'location' || $view == 'tingkat' || $view == 'jadwal'|| $view == 'absensi' || $view == 'bts')
 
   <!-- DataTables -->
   <script src="{{ asset('theme') }}/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -2897,6 +2897,14 @@
           name: 'name'
         },
         {
+          data: 'parents_name',
+          name: 'parents_name'
+        },
+        {
+          data: 'parents_username',
+          name: 'parents_username'
+        },
+        {
           data: 'quiz_score',
           name: 'quiz_score'
         },
@@ -3006,6 +3014,9 @@
           $("#nis").val(data.nis);
           $("#location_id").val(data.location_id);
           $("#is_qrcode").val(data.is_qrcode);
+          $("#parents_username").val(data.parents_username);
+          $("#parents_password").val(null);
+          $("#parents_name").val(data.parents_name);
 
         }
       })
@@ -3111,6 +3122,17 @@
       $("#password").val("");
       $("#nis").val("");
       $("#location_id").val("");
+      $("#class_group").val("");
+      $("#school_id").val("");
+      $("#is_active").val("");
+      $("#fathers_phone").val("");
+      $("#mothers_phone").val("");
+      $("#parents_name").val("");
+      $("#parents_username").val("");
+      $("#parents_password").val("");
+
+
+
     }
 
 
@@ -7096,6 +7118,349 @@
 
       window.location.href =
         "{{ route('absensi.export.pdf') }}?" + params;
+
+    });
+  </script>
+
+  @endif
+
+
+  @if($view == 'bts')
+
+  <script>
+    $("#userid").select2();
+    $("#filter_user_id").select2();
+    $("#filter_host_id").select2();
+
+    $("#host_masuk").select2();
+    $("#host_pulang").select2();
+
+    var table = $('#bts_table').DataTable({
+
+      lengthMenu: [
+        [10, 25, 50, 100],
+        [10, 25, 50, 100]
+      ],
+
+      processing: true,
+
+      serverSide: true,
+
+      ajax: {
+        url: "{{ route('bts.table') }}",
+
+        data: function(d) {
+
+          d.tanggal_mulai =
+            $('#tanggal_mulai').val();
+
+          d.tanggal_selesai =
+            $('#tanggal_selesai').val();
+
+          d.status =
+            $('#filter_status').val();
+
+          d.user_id =
+            $('#filter_user_id').val();
+
+          d.location_id =
+            $('#filter_location_id').val();
+
+          d.host_id =
+            $('#filter_host_id').val();
+
+        }
+      },
+
+      order: [
+        [0, "desc"]
+      ],
+
+      columns: [
+
+        {
+          data: 'id',
+          name: 'id'
+        },
+        {
+          data: 'action',
+          name: 'action',
+          orderable: false,
+          searchable: false,
+        },
+
+        {
+          data: 'userid',
+          name: 'userid',
+          orderable: false
+        },
+
+        {
+          data: 'kelas',
+          name: 'kelas',
+        },
+        {
+          data: 'sekolah',
+          name: 'sekolah',
+        },
+        {
+          data: 'phone',
+          name: 'phone',
+        },
+
+
+        {
+          data: 'location_id',
+          name: 'location_id',
+          orderable: false
+        },
+        {
+          data: 'lat_masuk',
+          name: 'lat_masuk',
+          orderable: false
+        },
+        {
+          data: 'lat_pulang',
+          name: 'lat_pulang',
+          orderable: false
+        },
+
+        {
+          data: 'status_label',
+          name: 'status',
+          orderable: false,
+          searchable: false
+        },
+
+        {
+          data: 'waktu_masuk',
+          name: 'waktu_masuk'
+        },
+
+        {
+          data: 'waktu_pulang',
+          name: 'waktu_pulang'
+        },
+
+        {
+          data: 'keterangan_masuk',
+          name: 'keterangan_masuk',
+          defaultContent: '-'
+        },
+
+        {
+          data: 'keterangan_pulang',
+          name: 'keterangan_pulang',
+          defaultContent: '-'
+        },
+
+        {
+          data: 'catatan_admin_masuk',
+          name: 'catatan_admin_masuk',
+          defaultContent: '-'
+        },
+        {
+          data: 'catatan_admin_pulang',
+          name: 'catatan_admin_pulang',
+          defaultContent: '-'
+        },
+        {
+          data: 'host_masuk',
+          name: 'host_masuk',
+          defaultContent: '-'
+        },
+        {
+          data: 'host_pulang',
+          name: 'host_pulang',
+          defaultContent: '-'
+        }
+
+
+
+      ]
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    $('#btn-filter').click(function() {
+
+      table.ajax.reload();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESET
+    |--------------------------------------------------------------------------
+    */
+
+    $('#btn-reset').click(function() {
+
+      $('#tanggal_mulai').val('');
+      $('#tanggal_selesai').val('');
+
+      $('#filter_status').val('');
+
+      $('#filter_user_id').val('').trigger('change');
+
+      $('#filter_location_id').val('');
+
+      $('#filter_host_id').val('').trigger('change');
+
+      table.ajax.reload();
+
+    });
+
+
+    function editData(id) {
+      showLoading();
+      save_method = "edit";
+      $('input[name=_method]').val('PATCH');
+      $('#modal-add form')[0].reset();
+      $.ajax({
+        url: "{{ url('bts') }}" + "/" + id + "/edit",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          hideLoading();
+          $('#modal-add').modal("show");
+          $('.modal-title').text("Edit Absensi BTS");
+          $("#id").val(data.id);
+          $("#userid").val(data.userid).trigger('change');
+          $("#status").val(data.status);
+          $("#waktu_masuk").val(data.waktu_masuk);
+          $("#waktu_pulang").val(data.waktu_pulang);
+          $("#lat_masuk").val(data.lat_masuk);
+          $("#lng_masuk").val(data.lng_masuk);
+          $("#lat_pulang").val(data.lat_pulang);
+          $("#lng_pulang").val(data.lng_pulang);
+          $("#keterangan_masuk").val(data.keterangan_masuk);
+          $("#keterangan_pulang").val(data.keterangan_pulang);
+          $("#catatan_admin_masuk").val(data.catatan_admin_masuk);
+          $("#catatan_admin_pulang").val(data.catatan_admin_pulang);
+          $("#host_masuk").val(data.host_masuk).trigger('change');
+          $("#host_pulang").val(data.host_pulang).trigger('change');
+        }
+      })
+    }
+
+
+
+    $("#form-simpan").submit(function(e) {
+      $("#loadingProgress").show();
+      e.preventDefault();
+      var id = $('#id').val();
+      if (save_method == "add") url = "{{ url('bts') }}";
+      else url = "{{ url('bts') .'/'}}" + id;
+      $.ajax({
+        url: url,
+        type: "POST",
+        data: new FormData($('#modal-add form')[0]),
+        contentType: false,
+        processData: false,
+        success: function(data) {
+          if (data.success == true) {
+            $('#modal-add').modal('hide');
+            table.ajax.reload(null, false);
+            $("#loadingProgress").hide();
+
+          }
+        }
+
+      });
+    });
+
+
+    function deleteData(id) {
+      $("#id_hapus").val(id);
+      $("#modal-hapus").modal("show");
+    }
+
+
+    function deleteDataConfirm() {
+      var id = $("#id_hapus").val();
+      var csrf_token = $('meta[name="csrf-token"]').attr('content');
+      $.ajax({
+        url: "{{ url('bts') }}" + '/' + id,
+        type: "POST",
+        data: {
+          '_method': 'DELETE',
+          '_token': csrf_token
+        },
+        success: function($data) {
+          table.ajax.reload(null, false);
+          $("#modal-hapus").modal("hide");
+        }
+      });
+    }
+
+
+    function resetForm() {
+
+    }
+
+    function showLoading() {
+      $("#loadingProgress").show();
+    }
+
+
+    function hideLoading() {
+      $("#loadingProgress").hide();
+    }
+
+
+    $('#btn-export-excel').click(function() {
+
+      var params = $.param({
+
+        tanggal_mulai: $('#tanggal_mulai').val(),
+
+        tanggal_selesai: $('#tanggal_selesai').val(),
+
+        status: $('#filter_status').val(),
+
+        user_id: $('#filter_user_id').val(),
+
+        location_id: $('#filter_location_id').val(),
+
+        host_id: $('#filter_host_id').val()
+
+      });
+
+      window.location.href =
+        "{{ route('bts.export.excel') }}?" + params;
+
+    });
+
+
+
+    $('#btn-export-pdf').click(function() {
+
+      var params = $.param({
+
+        tanggal_mulai: $('#tanggal_mulai').val(),
+
+        tanggal_selesai: $('#tanggal_selesai').val(),
+
+        status: $('#filter_status').val(),
+
+        user_id: $('#filter_user_id').val(),
+
+        location_id: $('#filter_location_id').val(),
+
+        host_id: $('#filter_host_id').val()
+
+      });
+
+      window.location.href =
+        "{{ route('bts.export.pdf') }}?" + params;
 
     });
   </script>

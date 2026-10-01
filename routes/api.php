@@ -224,6 +224,9 @@ use Illuminate\Support\Facades\Route;
 
 // ====================== new api v4 ========================================
 
+
+
+
 Route::prefix('v4')->group(function () {
 
     Route::post('login', 'UserController@login');
@@ -246,6 +249,7 @@ Route::prefix('v4')->group(function () {
         Route::get('/jadwal', 'AbsensiApiV3Controller@jadwal');
         Route::post('/status_absensi', 'AbsensiApiV3Controller@status');
         Route::post('/absensi_history', 'AbsensiApiV3Controller@history');
+        Route::post('/bts/scan', 'AbsensiApiV3Controller@bts');
 
 
         Route::get('logout/{id}', 'UserController@logout');

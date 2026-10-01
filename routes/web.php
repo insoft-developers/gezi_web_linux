@@ -11,6 +11,8 @@
 |
 */
 
+use App\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'HomeController@index')->name('default');
@@ -221,5 +223,43 @@ Route::get(
 
 
 Route::post('generate_urutan', 'WebBankSoalController@generateUrutan')->name('generate.urutan');
+
+Route::resource('/bts', 'BtsController');
+Route::get('/bts_table', 'BtsController@table')->name('bts.table');
+Route::get(
+    'bts/export/excel',
+    'BtsController@exportExcel'
+)->name('bts.export.excel');
+
+Route::get(
+    'bts/export/pdf',
+    'BtsController@exportPdf'
+)->name('bts.export.pdf');
+
+
+Route::get('setup_parents', function () {
+
+    $password = Hash::make('1234');
+
+    User::where('is_active', 1)
+        ->chunkById(500, function ($users) use ($password) {
+
+            foreach ($users as $user) {
+
+                User::where('id', $user->id)->update([
+                    'parents_name'     => $user->name . ' Parents',
+                    'parents_username' => uniqid() . '@mail.com',
+                    'parents_password' => $password,
+                ]);
+            }
+
+        });
+
+    return 'Selesai';
+});
+
+
+
+
 
 

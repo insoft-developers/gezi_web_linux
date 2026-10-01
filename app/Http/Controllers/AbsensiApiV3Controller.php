@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Absensi;
+use App\Bts;
 use App\Location;
 use App\User;
 use App\Jadwal;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AbsensiApiV3Controller extends Controller
 {
@@ -354,5 +356,109 @@ class AbsensiApiV3Controller extends Controller
                 'has_more'     => $absensi->hasMorePages(),
             ],
         ]);
+    }
+
+
+
+
+    public function bts(Request $request)
+    {
+        $input = $request->all();
+        $request->validate([
+            'jenis' => 'required',
+            'qrcode'    => 'required|string',
+            'id'     => 'required_if:jenis,pulang',
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak terdaftar.'
+            ], 422);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Ambil lokasi siswa
+        |--------------------------------------------------------------------------
+        */
+
+        $locationId = $user->location_id;
+
+        if (!$locationId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda belum memiliki lokasi.'
+            ], 422);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Cari QR Code
+        |--------------------------------------------------------------------------
+        */
+
+        $parts = explode('|', $request->qrcode);
+
+        if (count($parts) !== 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR Code tidak valid.',
+            ], 422);
+        }
+
+        $locationQr = $parts[0];
+        $teacherId = $parts[1];
+
+        $location = Location::where('qrcode', $locationQr)->first();
+
+
+
+        if (!$location) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR Code tidak valid atau sudah expired.'
+            ], 422);
+        }
+
+
+        $jamSekarang = Carbon::now();
+
+        if ($input['jenis'] == 'masuk') {
+            Bts::create([
+                "userid" => $user->id,
+                "lat_masuk" => $input['latitude'],
+                "lng_masuk" => $input['longitude'],
+                "status" => 1,
+                "waktu_masuk" => $jamSekarang->format('Y-m-d H:i:s'),
+                "keterangan_masuk" => $input['keterangan_masuk'],
+                "host_masuk" => $teacherId
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Absen masuk BTS berhasil.',
+                
+            ]);
+        }
+
+        else if ($input['jenis'] == 'pulang') {
+            $pulang = Bts::find($input['id']);
+            $pulang->lat_pulang = $input['latitude'];
+            $pulang->lng_pulang = $input['longitude'];
+            $pulang->status = 2;
+            $pulang->waktu_pulang = $jamSekarang->format('Y-m-d H:i:s');
+            $pulang->keterangan_pulang = $input['keterangan_pulang'];
+            $pulang->host_pulang = $teacherId;
+
+            $pulang->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Absen Pulang BTS berhasil.',
+                
+            ]);
+        }
     }
 }

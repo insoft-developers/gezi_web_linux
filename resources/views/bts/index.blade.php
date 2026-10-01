@@ -7,7 +7,7 @@
     <section class="content-header">
 
         <h1>
-            Absensi
+            BTS
         </h1>
 
         <ol class="breadcrumb">
@@ -22,7 +22,7 @@
             </li>
 
             <li class="active">
-                Data Absensi
+                BTS
             </li>
         </ol>
 
@@ -40,7 +40,7 @@
                     <div class="box-header">
 
                         <h3 class="box-title">
-                            Data Absensi
+                            Data BTS
                         </h3>
 
                     </div>
@@ -113,7 +113,7 @@
                                         Semua Siswa
                                     </option>
 
-                                    @foreach($users as $user)
+                                    @foreach($users??[] as $user)
 
                                     <option value="{{ $user->id }}">
                                         {{ $user->name }}
@@ -138,7 +138,7 @@
                                         Semua Location
                                     </option>
 
-                                    @foreach($locations as $location)
+                                    @foreach($locations??[] as $location)
 
                                     <option value="{{ $location->id }}">
                                         {{ $location->name }}
@@ -151,22 +151,22 @@
                             </div>
 
 
-                          <div class="col-md-2">
+                            <div class="col-md-2">
 
-                                <label>Jadwal</label>
+                                <label>Tutor</label>
 
                                 <select
-                                    id="filter_jadwal_id"
+                                    id="filter_host_id"
                                     class="form-control">
 
                                     <option value="">
-                                        Semua Jadwal
+                                        Semua Tutor
                                     </option>
 
-                                    @foreach($jadwals ?? [] as $jadwal)
+                                    @foreach($users ?? [] as $user)
 
-                                    <option value="{{ $jadwal->id }}">
-                                        {{ isset($jadwal->name) ? $jadwal->name : $jadwal->id }}
+                                    <option value="{{ $user->id }}">
+                                        {{ isset($user->name) ? $user->name : $user->id }}
                                     </option>
 
                                     @endforeach
@@ -232,7 +232,7 @@
                         <div class="table-responsive">
 
                             <table
-                                id="absensi_table"
+                                id="bts_table"
                                 class="table table-bordered table-striped nowrap"
                                 width="100%">
 
@@ -258,10 +258,6 @@
                                         </th>
 
                                         <th>
-                                            Jadwal
-                                        </th>
-
-                                        <th>
                                             Cabang
                                         </th>
                                         <th>
@@ -276,27 +272,13 @@
                                         </th>
 
                                         <th>
-                                            Tgl Masuk
+                                            Waktu Masuk
                                         </th>
 
                                         <th>
-                                            Jadwal Waktu Masuk
+                                            Waktu Pulang
                                         </th>
-                                        <th>
-                                            Jam Masuk
-                                        </th>
-
-                                        <th>
-                                            Tgl Pulang
-                                        </th>
-                                        <th>
-                                            Jadwal Waktu Pulang
-                                        </th>
-
-                                        <th>
-                                            Jam Pulang
-                                        </th>
-
+                                       
                                         <th>
                                             Keterangan Masuk
                                         </th>
@@ -335,7 +317,8 @@
         </div>
 
     </section>
-    @include('modal.modal_add_absensi')
+
+    @include('modal.modal_add_bts')
     @include('modal.modal_hapus')
 
 </div>

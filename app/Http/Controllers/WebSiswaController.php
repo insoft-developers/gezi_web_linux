@@ -103,6 +103,9 @@ class WebSiswaController extends Controller
         $user->is_active = $input['is_active'];
         $user->location_id = $input['location_id'];
         $user->is_qrcode = $input['is_qrcode'];
+        $user->parents_name = $input['parents_name'];
+        $user->parents_username = $input['parents_username'];
+        $user->parents_password = bcrypt($input['parents_password']);
         $user->save();
         
         return response()->json([
@@ -173,6 +176,13 @@ class WebSiswaController extends Controller
         if(! empty($input['password']))
         {
             $user->password = bcrypt($input['password']);
+        }
+
+        $user->parents_name = $input['parents_name'];
+        $user->parents_username = $input['parents_username'];
+        if(! empty($input['parents_password']))
+        {
+            $user->parents_password = bcrypt($input['parents_password']);
         }
         
         $user->save();

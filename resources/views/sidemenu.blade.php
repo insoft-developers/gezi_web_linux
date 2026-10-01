@@ -69,6 +69,7 @@ $home = $parentMenu([
 $absensiMenu = $parentMenu([
 'jadwal',
 'absensi',
+'bts'
 ]);
 
 
@@ -225,6 +226,7 @@ $ref = $childMenu(['ref']);
 
 $jadwal = $childMenu(['jadwal']);
 $absensi = $childMenu(['absensi']);
+$bts = $childMenu(['bts']);
 
 
 /*
@@ -541,6 +543,18 @@ $dms = $childMenu([
                     <i class="fa fa-circle-o"></i>
 
                     Absensi List
+
+                </a>
+
+            </li>
+
+             <li class="{{ $bts }}">
+
+                <a href="{{ url('bts') }}">
+
+                    <i class="fa fa-circle-o"></i>
+
+                    BTS List
 
                 </a>
 

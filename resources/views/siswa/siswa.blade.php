@@ -142,6 +142,8 @@
                   <th width="10%">Status</th>
                   <th width="13%">Date</th>
                   <th width="*">Nama Siswa</th>
+                  <th width="8%">Nama Orang Tua</th>
+                  <th width="8%">Username Orang Tua</th>
                   <th width="8%">Skor Kuis</th>
                   <th width="8%">Skor Bank Soal</th>
                   <th width="8%">L.A</th>
