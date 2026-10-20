@@ -3041,7 +3041,24 @@
             $('#modal-add').modal('hide');
             table.ajax.reload(null, false);
             $("#loadingProgress").hide();
+          }
+        },
+        error: function(xhr) {
+          $("#loadingProgress").hide(); // Pastikan loading disembunyikan saat error
 
+          // Cek apakah error berasal dari validasi (HTTP Status 422)
+          if (xhr.status === 422) {
+            // Tangkap pesan dari JSON yang dikirim Controller
+            let errorMessage = xhr.responseJSON.message;
+
+            // Tampilkan error (Contoh menggunakan alert bawaan browser)
+            alert(errorMessage);
+
+            // Opsional: Tampilkan di elemen HTML dalam modal Anda
+            // $('#pesan-error').text(errorMessage).show();
+          } else {
+            // Error lain seperti 500 Internal Server Error atau koneksi terputus
+            alert("Terjadi kesalahan pada server. Silakan coba lagi.");
           }
         }
 

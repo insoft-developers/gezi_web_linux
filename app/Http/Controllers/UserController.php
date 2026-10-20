@@ -5,7 +5,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Validator;
+
 use App\User;
 use App\Kelas;
 use App\School;
@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use App\DashboardMenuSetting;
 
 use Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -155,22 +156,56 @@ class UserController extends Controller
 
     public function upload(Request $request)
     {
+        // 1. Validasi input ID dan Gambar
+        $validator = Validator::make($request->all(), [
+            'ids'   => 'required|exists:users,id', // Pastikan ID dikirim dan ada di database
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:1024', // Wajib ada, format gambar, maks 1MB
+        ]);
+
+        // 2. Kembalikan error 422 jika validasi gagal
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first() // Mengirim pesan error pertama
+            ], 422);
+        }
+
         $dir = 'images/profil/';
         $image = $request->file('image');
         $ids = $request->ids;
 
+        // 3. Gunakan hasFile() untuk memastikan itu adalah file, bukan sekadar string
+        if ($request->hasFile('image')) {
+            // Ambil ekstensi asli (misal .jpg), bukan memaksa .png
+            $extension = $image->getClientOriginalExtension();
+            $imageName = \Carbon\Carbon::now()->toDateString() . "-" . uniqid() . "." . $extension;
 
-        if ($request->has('image')) {
-            $imageName = \Carbon\Carbon::now()->toDateString() . "-" . uniqid() . "." . "png";
+            // Simpan file ke storage
             Storage::disk('public')->put($dir . $imageName, file_get_contents($image));
-        } else {
-            return response()->json(['message' => trans('/storage/test/' . 'def.png.')], 200);
-        }
 
-        $user = User::findorFail($ids);
-        $user->profile_image = $imageName;
-        $user->save();
-        return response()->json(['message' => trans('/storage/test/' . $imageName)], 200);
+            $user = User::findOrFail($ids);
+
+            // 4. (Opsional tapi disarankan) Hapus gambar lama jika ada agar storage tidak penuh
+            if ($user->profile_image != NULL && Storage::disk('public')->exists($dir . $user->profile_image)) {
+                Storage::disk('public')->delete($dir . $user->profile_image);
+            }
+
+            $user->profile_image = $imageName;
+            $user->save();
+
+            // Kembalikan response sukses
+            return response()->json([
+                'success' => true,
+                'message' => 'Upload berhasil',
+                'file_name' => $imageName
+            ], 200);
+        } else {
+            // Kondisi ini jarang tercapai karena sudah dihadang validasi 'required' di atas
+            return response()->json([
+                'success' => false,
+                'message' => 'File tidak ditemukan'
+            ], 400);
+        }
     }
 
 
