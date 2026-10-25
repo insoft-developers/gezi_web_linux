@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - drainstech.com
 
 jobs:
   deploy:
@@ -11,6 +12,7 @@ jobs:
 
     steps:
       - name: Deploy to Rumahweb
+        if: github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -19,3 +21,18 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             /home/gens7193/public_html/panel-admin.gen-zi.id/deploy.sh
+
+      - name: Deploy to VPS Drainstech
+        if: github.ref == 'refs/heads/drainstech.com'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /www/wwwroot/genzi.drainstech.com
+            GIT_SSH_COMMAND="ssh -i /root/.ssh/github_genzi" git fetch origin
+            GIT_SSH_COMMAND="ssh -i /root/.ssh/github_genzi" git reset --hard origin/drainstech.com
+            /www/server/php/74/bin/php artisan config:clear
+            /www/server/php/74/bin/php artisan cache:clear
+            /www/server/php/74/bin/php artisan view:clear
