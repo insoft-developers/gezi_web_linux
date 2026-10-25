@@ -35,6 +35,9 @@ jobs:
             GIT_SSH_COMMAND="ssh -i /root/.ssh/github_genzi" git fetch origin
             GIT_SSH_COMMAND="ssh -i /root/.ssh/github_genzi" git reset --hard origin/drainstech.com
 
+            rm -f public/storage
+            ln -s /www/wwwroot/genzi.drainstech.com/storage/app/public public/storage
+
             rm -f bootstrap/cache/*.php
 
             /www/server/php/74/bin/php /usr/bin/composer install --no-dev --no-scripts --optimize-autoloader
