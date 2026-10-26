@@ -240,6 +240,7 @@ class AbsensiApiV3Controller extends Controller
 
                 'keterangan_masuk'  => $keteranganMasuk,
                 'host_id'           => $teacherId,
+                'alasan_masuk'      => $input['catatan'] ?? ''
 
             ]);
 
@@ -293,6 +294,7 @@ class AbsensiApiV3Controller extends Controller
 
             'keterangan_pulang'  => $keteranganPulang,
             'host_id_pulang'     => $teacherId,
+            'alasan_pulang'      => $input['catatan'] ?? ''
         ]);
 
 
