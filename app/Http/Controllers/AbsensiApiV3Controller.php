@@ -369,7 +369,7 @@ class AbsensiApiV3Controller extends Controller
         $request->validate([
             'jenis' => 'required',
             'qrcode'    => 'required|string',
-            'id'     => 'required_if:jenis,pulang',
+           
         ]);
 
         $user = Auth::user();
@@ -435,7 +435,7 @@ class AbsensiApiV3Controller extends Controller
                 "lng_masuk" => $input['longitude'],
                 "status" => 1,
                 "waktu_masuk" => $jamSekarang->format('Y-m-d H:i:s'),
-                "keterangan_masuk" => $input['keterangan_masuk'],
+                "keterangan_masuk" => $input['catatan'],
                 "host_masuk" => $teacherId
             ]);
 
@@ -452,7 +452,7 @@ class AbsensiApiV3Controller extends Controller
             $pulang->lng_pulang = $input['longitude'];
             $pulang->status = 2;
             $pulang->waktu_pulang = $jamSekarang->format('Y-m-d H:i:s');
-            $pulang->keterangan_pulang = $input['keterangan_pulang'];
+            $pulang->keterangan_pulang = $input['catatan'];
             $pulang->host_pulang = $teacherId;
 
             $pulang->save();
