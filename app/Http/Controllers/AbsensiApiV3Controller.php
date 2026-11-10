@@ -18,10 +18,23 @@ class AbsensiApiV3Controller extends Controller
     {
         $input = $request->all();
         $user = User::find($input['user_id']);
-        $absensi = Absensi::where('user_id', $user->id)
+        
+        $jadwal = Jadwal::find($input['jadwal_id']);
+        $jadwalName = $jadwal->name ?? '';
+
+        $absensi = null;
+
+        if($jadwalName == 'BTS') {
+            $absensi = Bts::where('userid', $user->id)
+            ->latest('id')
+            ->first();
+        } else {
+            $absensi = Absensi::where('user_id', $user->id)
             ->where('jadwal_id', $input['jadwal_id'])
             ->latest('id')
             ->first();
+        }
+        
 
         if (!$absensi) {
             return response()->json([
@@ -41,10 +54,10 @@ class AbsensiApiV3Controller extends Controller
             "success" => true,
             "data" => [
                 "status" => (int) $absensi->status,
-                "waktu_masuk" => $absensi->jam_masuk,
-                "waktu_pulang" => $absensi->jam_pulang,
-                "tanggal_masuk" => $absensi->tanggal_masuk,
-                "tanggal_pulang" => $absensi->tanggal_pulang
+                "waktu_masuk" => $jadwalName == 'BTS' ? date('H:i:s', strtotime($absensi->waktu_masuk)): $absensi->jam_masuk,
+                "waktu_pulang" => $jadwalName == 'BTS' ? date('H:i:s', strtotime($absensi->waktu_pulang)): $absensi->jam_pulang,
+                "tanggal_masuk" => $jadwalName == 'BTS' ? date('d-m-Y', strtotime($absensi->waktu_masuk)): $absensi->tanggal_masuk,
+                "tanggal_pulang" =>$jadwalName == 'BTS' ? date('d-m-Y', strtotime($absensi->waktu_pulang)): $absensi->tanggal_pulang
             ]
         ]);
     }
@@ -462,5 +475,21 @@ class AbsensiApiV3Controller extends Controller
                 
             ]);
         }
+    }
+
+    public function btsMasukList(Request $request)
+    {
+        $user = auth()->user();
+        $data = Bts::with(['user','hostMasuk','hostPulang'])
+            ->where('userid', $user->id)
+            ->select('id', 'userid', 'status', 'waktu_masuk', 'waktu_pulang', 'keterangan_masuk','keterangan_pulang','host_masuk','host_pulang')
+            
+            ->get();
+
+        return response()->json([
+                'success' => true,
+                'data' => $data,
+                
+            ]);
     }
 }
