@@ -26,7 +26,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'parents_password','remember_token',
     ];
 
     /**
@@ -59,6 +59,17 @@ class User extends Authenticatable
     public function bankSoalSessions()
     {
         return $this->hasMany(BankSoalSession::class, 'id_user', 'id');
+    }
+
+    public function parentAccounts()
+    {
+        return $this->belongsToMany(
+            ParentAccount::class,
+            'parent_student',
+            'student_id',
+            'parent_id'
+        )->withPivot('relationship')
+        ->withTimestamps();
     }
 
 

@@ -137,6 +137,7 @@
                 <tr>
                   <th width="10%">Action</th>
                   <th width="5%">ID</th>
+                  <th width="10%">Parents</th>
                   <th width="5%">VERSI</th>
                   <th width="15%">Foto</th>
                   <th width="10%">Status</th>
@@ -178,6 +179,7 @@
     <!-- /.content -->
     @include('modal.modal_add_siswa')
     @include('modal.modal_hapus')
+    @include('modal.modal_parents')
     <!-- Modal Hapus Sesi -->
     <div class="modal fade" id="modalHapusSesi" tabindex="-1" role="dialog" aria-labelledby="modalHapusSesiLabel">
         <div class="modal-dialog modal-sm" role="document">

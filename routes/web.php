@@ -85,7 +85,8 @@ Route::post('display_tryout_report', 'WebTryoutController@displayReport');
 Route::resource('siswa', 'WebSiswaController');
 Route::get('siswa_table', 'WebSiswaController@siswaTable')->name('siswaTable');
 
-Route::get('siswa_export','WebSiswaController@export')->name('siswa.export');
+Route::get('siswa_export', 'WebSiswaController@export')->name('siswa.export');
+Route::post('siswa/{id}/activate-parent', 'WebSiswaController@activateParent')->name('siswa.activateParent');
 
 
 Route::resource('admin', 'WebAdminController');
@@ -158,7 +159,7 @@ Route::post('jawaban_add', 'WebQuestionController@jawabanAdd');
 Route::patch('jawaban_update/{id}', 'WebQuestionController@jawabanUpdate');
 Route::get('jawaban_edit/{id}', 'WebQuestionController@jawabanEdit');
 Route::delete('jawaban_delete/{id}', 'WebQuestionController@jawabanDelete');
-Route::post('delete_answer_image', 'WebQuestionController@deleteImage' );
+Route::post('delete_answer_image', 'WebQuestionController@deleteImage');
 
 Route::get('lapor', 'LaporController@index');
 Route::get('lapor_table', 'LaporController@laporTable')->name('laporTable');
@@ -193,8 +194,8 @@ Route::resource('ref', 'RefController');
 Route::get('ref_table', 'RefController@refTable')->name('refTable');
 Route::post('count_quiz_record', 'ExquizController@countRecord')->name('count.quiz.record');
 
-Route::get('privacy_policy', function(){
-   return view('privacy'); 
+Route::get('privacy_policy', function () {
+    return view('privacy');
 });
 
 Route::get('reset_password/{id}', 'WebSiswaController@resetPassword');
@@ -236,30 +237,12 @@ Route::get(
     'BtsController@exportPdf'
 )->name('bts.export.pdf');
 
+Route::post(
+    'parent-account/{id}/deactivate',
+    'WebSiswaController@deactivateParent'
+)->name('parent.deactivate');
 
-Route::get('setup_parents', function () {
-
-    $password = Hash::make('1234');
-
-    User::where('is_active', 1)
-        ->chunkById(500, function ($users) use ($password) {
-
-            foreach ($users as $user) {
-
-                User::where('id', $user->id)->update([
-                    'parents_name'     => $user->name . ' Parents',
-                    'parents_username' => uniqid() . '@mail.com',
-                    'parents_password' => $password,
-                ]);
-            }
-
-        });
-
-    return 'Selesai';
-});
-
-
-
-
-
-
+Route::post(
+    'parent-account/{id}/activate',
+    'WebSiswaController@activateParentAccount'
+)->name('parent.activate');

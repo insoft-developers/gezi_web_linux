@@ -17,6 +17,12 @@ Route::prefix('v4')->group(function () {
     Route::post('setting_login', 'SettingController@settingLogin');
 
 
+    Route::middleware('auth:api')->prefix('student/activity')->group(function () {
+        Route::post('video', 'StudentActivityController@recordVideo');
+        Route::post('pdf', 'StudentActivityController@recordPdf');
+    });
+
+
     Route::middleware('auth:api')->group(function () {
         Route::post('tryout_subject', 'TryoutApiV3Controller@subject');
         Route::get('tryout/{id}/{subjectId}', 'TryoutApiV3Controller@tryout');
@@ -114,5 +120,37 @@ Route::prefix('v4')->group(function () {
         Route::post('ref_list', 'SliderController@refList');
         Route::post('user_detail', 'UserController@userDetail');
         Route::get('dms', 'UserController@dms');
+    });
+
+
+    // API ORANG TUA
+    // API ORANG TUA
+    Route::prefix('parent')->group(function () {
+
+        Route::post('login', 'ParentController@login');
+
+        Route::middleware([
+            'auth:parent-api',
+            'parent.active'
+        ])->group(function () {
+
+            Route::post(
+                'change_password',
+                'ParentController@changePassword'
+            );
+
+            Route::post(
+                'logout',
+                'ParentController@logout'
+            );
+
+            Route::middleware('parent.password.changed')->group(function () {
+
+                Route::get(
+                    'children',
+                    'ParentController@children'
+                );
+            });
+        });
     });
 });

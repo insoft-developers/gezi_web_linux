@@ -1,6 +1,7 @@
 <div class="modal fade" id="modal-add">
   <div class="modal-dialog">
-    <form id="form-simpan">
+    
+    <form id="form-simpan" method="POST" enctype="multipart/form-data">
       {{ csrf_field() }} {{ method_field('POST') }}
       <div class="modal-content">
         <div class="modal-header">

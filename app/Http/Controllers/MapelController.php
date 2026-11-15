@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Mapel;
 use App\Bimbingan;
-use DB;
 use App\Comment;
 use App\Like;
 use App\Kelas;
@@ -13,6 +12,8 @@ use App\User;
 use App\MateriPembelajaran;
 use App\KategoriVideo;
 use App\TobkVideo;
+use Illuminate\Support\Facades\DB;
+
 class MapelController extends Controller
 {
     

@@ -16,10 +16,12 @@ use App\QuizAnswer;
 use App\BankSoalAnswer;
 use App\TryoutSession;
 use App\TryoutAnswer;
+use App\ParentAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use App\Services\ParentActivationService;
 
 class WebSiswaController extends Controller
 {
@@ -164,7 +166,7 @@ class WebSiswaController extends Controller
     {
         // 1. Validasi input gambar maksimal 1MB (1024 KB)
         $validator = Validator::make($request->all(), [
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
+            'profile_image' => 'nullable|max:1024',
         ]);
 
         if ($validator->fails()) {
@@ -257,7 +259,8 @@ class WebSiswaController extends Controller
         $siswa = User::with([
             'location',
             'kelas',
-            'school'
+            'school',
+            'parentAccounts',
         ]);
 
 
@@ -627,8 +630,76 @@ class WebSiswaController extends Controller
             | ACTION
             |--------------------------------------------------------------------------
             */
+            ->addColumn('parents', function ($siswa) {
 
+                $html = '<center>';
+
+                $relationships = [
+                    'ayah' => 'Ayah',
+                    'ibu'  => 'Ibu',
+                    'wali' => 'Wali',
+                ];
+
+                $html .= '<button
+        type="button"
+        onclick="aktivasiOrangTua(' . $siswa->id . ')"
+        class="btn btn-info btn-xs"
+        style="width:100px;margin-bottom:5px;">
+        Parents Account
+    </button>';
+
+                foreach ($relationships as $key => $label) {
+
+                    $parents = $siswa->parentAccounts->filter(function ($parent) use ($key) {
+                        return $parent->pivot->relationship == $key;
+                    });
+
+                    if ($parents->isEmpty()) {
+                        $html .= '<div style="margin-bottom:3px;">';
+                        $html .= '<span class="label label-default">' . $label . ': Belum</span>';
+                        $html .= '</div>';
+                        continue;
+                    }
+
+                    foreach ($parents as $parent) {
+
+                        if ($parent->is_active == 1) {
+
+                            $html .= '<div style="margin-bottom:3px;">';
+                            $html .= '<span class="label label-success">' . $label . ': Aktif</span><br>';
+
+                            $html .= '<button
+                    type="button"
+                    onclick="deactivateParentAccount(' . $parent->id . ')"
+                    class="btn btn-danger btn-xs"
+                    style="margin-top:3px;">
+                    Nonaktifkan
+                </button>';
+                        } else {
+
+                            $html .= '<div style="margin-bottom:3px;">';
+                            $html .= '<span class="label label-danger">' . $label . ': Nonaktif</span><br>';
+
+                            $html .= '<button
+                    type="button"
+                    onclick="activateParentAccount(' . $parent->id . ')"
+                    class="btn btn-success btn-xs"
+                    style="margin-top:3px;">
+                    Aktifkan
+                </button>';
+                        }
+
+                        $html .= '</div>';
+                    }
+                }
+
+                $html .= '</center>';
+
+                return $html;
+            })
             ->addColumn('action', function ($siswa) {
+
+
 
                 $html = '<center>';
 
@@ -717,6 +788,7 @@ class WebSiswaController extends Controller
 
                 </a>';
 
+
                 $html .= '</center>';
 
                 return $html;
@@ -737,7 +809,8 @@ class WebSiswaController extends Controller
                 'profile_image',
                 'action',
                 'name',
-                'last_action'
+                'last_action',
+                'parents'
             ])
 
 
@@ -995,5 +1068,127 @@ class WebSiswaController extends Controller
 
 
         return response()->json(true);
+    }
+
+
+    public function activateParent(
+        Request $request,
+        $id,
+        ParentActivationService $service
+    ) {
+        if (!Session::has('id') || Session::get('level') != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak memiliki akses'
+            ], 403);
+        }
+
+        $student = User::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'guardians' => 'required|array|min:1|max:3',
+
+            'guardians.*.name' => 'required|string|max:255',
+            'guardians.*.phone' => 'required|string|max:30',
+            'guardians.*.relationship' =>
+            'required|in:ayah,ibu,wali',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        // Normalisasi nomor HP ayah dan ibu
+        $phones = [];
+
+        foreach ($request->guardians as $guardian) {
+            $phone = preg_replace('/[^0-9]/', '', $guardian['phone']);
+
+            if (substr($phone, 0, 1) === '0') {
+                $phone = '62' . substr($phone, 1);
+            } elseif (substr($phone, 0, 1) === '8') {
+                $phone = '62' . $phone;
+            }
+
+            if (isset($phones[$phone])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nomor HP ayah dan ibu tidak boleh sama. Silakan perbaiki nomor HP terlebih dahulu.'
+                ], 422);
+            }
+
+            $phones[$phone] = true;
+        }
+
+        try {
+            $result = $service->activate(
+                $student,
+                $request->guardians
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Aktivasi akun orang tua berhasil',
+                'data' => $result
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function deactivateParent($id)
+    {
+        if (!Session::has('id') || Session::get('level') != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak memiliki akses'
+            ], 403);
+        }
+
+        $parent = ParentAccount::findOrFail($id);
+
+        DB::transaction(function () use ($parent) {
+
+            $parent->is_active = 0;
+            $parent->save();
+
+            // Cabut seluruh token login orang tua
+            $parent->tokens()->update([
+                'revoked' => true
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun orang tua berhasil dinonaktifkan'
+        ]);
+    }
+
+
+    public function activateParentAccount($id)
+    {
+        if (!Session::has('id') || Session::get('level') != 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak memiliki akses'
+            ], 403);
+        }
+
+        $parent = ParentAccount::findOrFail($id);
+
+        $parent->is_active = 1;
+        $parent->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun orang tua berhasil diaktifkan kembali'
+        ]);
     }
 }
