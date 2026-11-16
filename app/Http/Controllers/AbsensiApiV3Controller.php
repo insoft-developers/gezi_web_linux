@@ -40,7 +40,7 @@ class AbsensiApiV3Controller extends Controller
             return response()->json([
                 "success" => true,
                 "data" => [
-                    "status" => 0,
+                    "status" => 2,
                     "waktu_masuk" => null,
                     "waktu_pulang" => null,
                     "tanggal_masuk" => null,
