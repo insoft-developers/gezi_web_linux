@@ -6,11 +6,13 @@ use App\User;
 use App\ParentAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Exception;
 
 class ParentActivationService
 {
+    /**
+     * Normalisasi nomor HP ke format 62.
+     */
     private function normalizePhone($phone)
     {
         $phone = preg_replace('/[^0-9]/', '', $phone);
@@ -24,12 +26,12 @@ class ParentActivationService
         return $phone;
     }
 
+    /**
+     * Aktivasi akun orang tua dan hubungkan dengan siswa.
+     */
     public function activate(User $student, array $guardians)
     {
-        return DB::transaction(function () use (
-            $student,
-            $guardians
-        ) {
+        return DB::transaction(function () use ($student, $guardians) {
 
             if (!$student->school_id) {
                 throw new Exception(
@@ -41,19 +43,21 @@ class ParentActivationService
 
             foreach ($guardians as $guardian) {
 
-                $name = trim($guardian['name']);
+                $name = trim($guardian['name'] ?? '');
                 $phone = $this->normalizePhone(
-                    $guardian['phone']
+                    $guardian['phone'] ?? ''
                 );
 
-                $relationship = $guardian['relationship'];
+                $relationship = $guardian['relationship'] ?? '';
 
+                // Validasi nama dan nomor HP
                 if (!$name || !$phone) {
                     throw new Exception(
                         'Nama dan nomor HP wajib diisi'
                     );
                 }
 
+                // Validasi hubungan
                 if (!in_array(
                     $relationship,
                     ['ayah', 'ibu', 'wali']
@@ -63,18 +67,23 @@ class ParentActivationService
                     );
                 }
 
-                // Cari akun berdasarkan sekolah dan HP
-                $parent = ParentAccount::where(
-                    'school_id',
-                    $student->school_id
-                )->where(
-                    'phone',
-                    $phone
-                )->lockForUpdate()->first();
+                /*
+                 * ==================================================
+                 * CARI AKUN ORANG TUA BERDASARKAN NOMOR HP GLOBAL
+                 * Tidak lagi dibatasi school_id.
+                 * ==================================================
+                 */
+
+                $parent = ParentAccount::where('phone', $phone)
+                    ->lockForUpdate()
+                    ->first();
 
                 $isNew = false;
 
-                // Jika belum ada, buat akun baru
+                /*
+                 * Jika nomor HP belum terdaftar,
+                 * buat akun orang tua baru.
+                 */
                 if (!$parent) {
 
                     $parent = ParentAccount::create([
@@ -89,8 +98,12 @@ class ParentActivationService
                     $isNew = true;
                 }
 
-                // Jika akun sudah ada, jangan reset password.
-                // Cukup hubungkan dengan siswa.
+                /*
+                 * ==================================================
+                 * CEK RELASI ORANG TUA DENGAN SISWA
+                 * ==================================================
+                 */
+
                 $existing = DB::table('parent_student')
                     ->where('parent_id', $parent->id)
                     ->where('student_id', $student->id)
@@ -98,15 +111,19 @@ class ParentActivationService
 
                 if ($existing) {
 
+                    // Jika hubungan berbeda, batalkan transaksi
                     if ($existing->relationship !== $relationship) {
                         throw new Exception(
                             'Akun nomor HP ' . $phone .
-                                ' sudah terdaftar sebagai ' . $existing->relationship .
-                                '. Silakan periksa data orang tua siswa.'
+                            ' sudah terdaftar sebagai ' .
+                            $existing->relationship .
+                            '. Silakan periksa data orang tua siswa.'
                         );
                     }
+
                 } else {
 
+                    // Hubungkan akun orang tua dengan siswa
                     DB::table('parent_student')->insert([
                         'parent_id' => $parent->id,
                         'student_id' => $student->id,
@@ -115,6 +132,12 @@ class ParentActivationService
                         'updated_at' => now(),
                     ]);
                 }
+
+                /*
+                 * ==================================================
+                 * HASIL AKTIVASI
+                 * ==================================================
+                 */
 
                 $results[] = [
                     'parent_id' => $parent->id,
