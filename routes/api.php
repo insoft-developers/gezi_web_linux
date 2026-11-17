@@ -217,7 +217,39 @@ Route::prefix('v4')->group(function () {
                     'children/{studentId}/bts/{id}',
                     'Api\V4\ParentBtsController@detail'
                 );
+
+
+                Route::get(
+                    'children/{studentId}/learning-activities/summary',
+                    'Api\V4\ParentLearningActivityController@summary'
+                );
+
+                Route::get(
+                    'children/{studentId}/learning-activities/videos',
+                    'Api\V4\ParentLearningActivityController@videos'
+                );
+
+                Route::get(
+                    'children/{studentId}/learning-activities/pdfs',
+                    'Api\V4\ParentLearningActivityController@pdfs'
+                );
             });
         });
+    });
+
+
+    // Konten dashboard orang tua
+    Route::group([
+        'prefix' => 'parent',
+        'middleware' => [
+            'auth:parent-api',
+            'parent.active',
+            'parent.password.changed'
+        ]
+    ], function () {
+        Route::get('main_slider/{id}', 'SliderController@main');
+        Route::get('information', 'SliderController@information');
+        Route::get('promo', 'SliderController@promo');
+        Route::get('news', 'SliderController@news');
     });
 });

@@ -44,13 +44,21 @@ class ParentBtsController extends Controller
         }
 
         $query = DB::table('bts')
-            ->where('userid', $studentId)
-            ->select('bts.*');
+            ->leftJoin('users as tutor_masuk', 'bts.host_masuk', '=', 'tutor_masuk.id')
+            ->leftJoin('users as tutor_pulang', 'bts.host_pulang', '=', 'tutor_pulang.id')
+            ->where('bts.userid', $studentId)
+            ->select(
+                'bts.*',
+                'tutor_masuk.name as nama_host_masuk',
+                'tutor_pulang.name as nama_host_pulang'
+            );
 
+        // Filter tanggal tertentu
         if ($request->filled('date')) {
             $query->whereDate('waktu_masuk', $request->date);
         }
 
+        // Filter rentang tanggal
         if ($request->filled('from') && $request->filled('to')) {
             $query->whereBetween('waktu_masuk', [
                 $request->from . ' 00:00:00',
@@ -58,7 +66,16 @@ class ParentBtsController extends Controller
             ]);
         }
 
-        $perPage = min(max((int) $request->get('per_page', 15), 1), 100);
+        // Filter bulan dan tahun
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('waktu_masuk', $request->month)
+                ->whereYear('waktu_masuk', $request->year);
+        }
+
+        $perPage = min(
+            max((int) $request->get('per_page', 15), 1),
+            100
+        );
 
         $data = $query
             ->orderBy('waktu_masuk', 'desc')
@@ -90,8 +107,15 @@ class ParentBtsController extends Controller
         }
 
         $data = DB::table('bts')
-            ->where('userid', $studentId)
-            ->where('id', $id)
+            ->leftJoin('users as tutor_masuk', 'bts.host_masuk', '=', 'tutor_masuk.id')
+            ->leftJoin('users as tutor_pulang', 'bts.host_pulang', '=', 'tutor_pulang.id')
+            ->where('bts.userid', $studentId)
+            ->where('bts.id', $id)
+            ->select(
+                'bts.*',
+                'tutor_masuk.name as nama_host_masuk',
+                'tutor_pulang.name as nama_host_pulang'
+            )
             ->first();
 
         if (!$data) {
@@ -125,6 +149,7 @@ class ParentBtsController extends Controller
         $query = DB::table('bts')
             ->where('userid', $studentId);
 
+        // Filter bulan dan tahun
         if ($request->filled('month') && $request->filled('year')) {
             $query->whereMonth('waktu_masuk', $request->month)
                 ->whereYear('waktu_masuk', $request->year);
