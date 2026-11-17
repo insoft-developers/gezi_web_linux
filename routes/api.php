@@ -144,96 +144,95 @@ Route::prefix('v4')->group(function () {
                 'ParentController@logout'
             );
 
-            Route::middleware('parent.password.changed')->group(function () {
-
-                Route::get(
-                    'children',
-                    'ParentController@children'
-                );
-
-                Route::get(
-                    'children/{studentId}/score-summary',
-                    'ParentController@scoreSummary'
-                );
-
-                Route::get(
-                    'children/{studentId}/quiz',
-                    'ParentController@childQuizHistory'
-                );
-
-                Route::get(
-                    'children/{studentId}/banksoal',
-                    'ParentController@childBankSoalHistory'
-                );
-
-                Route::get(
-                    'children/{studentId}/tryout',
-                    'ParentController@childTryoutHistory'
-                );
-
-                Route::get(
-                    'children/{studentId}/quiz-sessions/{sessionId}/detail',
-                    'ParentController@childQuizDetail'
-                );
-
-                Route::get(
-                    'children/{studentId}/banksoal-sessions/{sessionId}/detail',
-                    'ParentController@childBankSoalDetail'
-                );
-
-                Route::get(
-                    'children/{studentId}/tryout-sessions/{sessionId}/detail',
-                    'ParentController@childTryoutDetail'
-                );
-
-                // ABSENSI PARENT
-                Route::get(
-                    'children/{studentId}/attendance',
-                    'Api\V4\ParentAttendanceController@index'
-                );
-
-                Route::get(
-                    'children/{studentId}/attendance/summary',
-                    'Api\V4\ParentAttendanceController@summary'
-                );
-
-                Route::get(
-                    'children/{studentId}/attendance/{id}',
-                    'Api\V4\ParentAttendanceController@detail'
-                );
-
-                // BTS PARENT
-                Route::get(
-                    'children/{studentId}/bts',
-                    'Api\V4\ParentBtsController@index'
-                );
-
-                Route::get(
-                    'children/{studentId}/bts/summary',
-                    'Api\V4\ParentBtsController@summary'
-                );
-
-                Route::get(
-                    'children/{studentId}/bts/{id}',
-                    'Api\V4\ParentBtsController@detail'
-                );
 
 
-                Route::get(
-                    'children/{studentId}/learning-activities/summary',
-                    'Api\V4\ParentLearningActivityController@summary'
-                );
+            Route::get(
+                'children',
+                'ParentController@children'
+            );
 
-                Route::get(
-                    'children/{studentId}/learning-activities/videos',
-                    'Api\V4\ParentLearningActivityController@videos'
-                );
+            Route::get(
+                'children/{studentId}/score-summary',
+                'ParentController@scoreSummary'
+            );
 
-                Route::get(
-                    'children/{studentId}/learning-activities/pdfs',
-                    'Api\V4\ParentLearningActivityController@pdfs'
-                );
-            });
+            Route::get(
+                'children/{studentId}/quiz',
+                'ParentController@childQuizHistory'
+            );
+
+            Route::get(
+                'children/{studentId}/banksoal',
+                'ParentController@childBankSoalHistory'
+            );
+
+            Route::get(
+                'children/{studentId}/tryout',
+                'ParentController@childTryoutHistory'
+            );
+
+            Route::get(
+                'children/{studentId}/quiz-sessions/{sessionId}/detail',
+                'ParentController@childQuizDetail'
+            );
+
+            Route::get(
+                'children/{studentId}/banksoal-sessions/{sessionId}/detail',
+                'ParentController@childBankSoalDetail'
+            );
+
+            Route::get(
+                'children/{studentId}/tryout-sessions/{sessionId}/detail',
+                'ParentController@childTryoutDetail'
+            );
+
+            // ABSENSI PARENT
+            Route::get(
+                'children/{studentId}/attendance',
+                'Api\V4\ParentAttendanceController@index'
+            );
+
+            Route::get(
+                'children/{studentId}/attendance/summary',
+                'Api\V4\ParentAttendanceController@summary'
+            );
+
+            Route::get(
+                'children/{studentId}/attendance/{id}',
+                'Api\V4\ParentAttendanceController@detail'
+            );
+
+            // BTS PARENT
+            Route::get(
+                'children/{studentId}/bts',
+                'Api\V4\ParentBtsController@index'
+            );
+
+            Route::get(
+                'children/{studentId}/bts/summary',
+                'Api\V4\ParentBtsController@summary'
+            );
+
+            Route::get(
+                'children/{studentId}/bts/{id}',
+                'Api\V4\ParentBtsController@detail'
+            );
+
+
+            Route::get(
+                'children/{studentId}/learning-activities/summary',
+                'Api\V4\ParentLearningActivityController@summary'
+            );
+
+            Route::get(
+                'children/{studentId}/learning-activities/videos',
+                'Api\V4\ParentLearningActivityController@videos'
+            );
+
+            Route::get(
+                'children/{studentId}/learning-activities/pdfs',
+                'Api\V4\ParentLearningActivityController@pdfs'
+            );
         });
     });
 
