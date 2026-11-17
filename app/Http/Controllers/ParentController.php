@@ -60,8 +60,7 @@ class ParentController extends Controller
             'success' => true,
             'message' => 'Login berhasil',
             'token' => $token,
-            'must_change_password' =>
-            (bool) $parent->must_change_password,
+            'must_change_password' => false,
             'parent' => [
                 'id' => $parent->id,
                 'name' => $parent->name,
