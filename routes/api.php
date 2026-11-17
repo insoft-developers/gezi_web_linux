@@ -244,7 +244,6 @@ Route::prefix('v4')->group(function () {
         'middleware' => [
             'auth:parent-api',
             'parent.active',
-            'parent.password.changed'
         ]
     ], function () {
         Route::get('main_slider/{id}', 'SliderController@main');
