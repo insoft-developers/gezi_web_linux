@@ -233,6 +233,11 @@ Route::prefix('v4')->group(function () {
                 'children/{studentId}/learning-activities/pdfs',
                 'Api\V4\ParentLearningActivityController@pdfs'
             );
+
+            Route::get(
+                'children/{studentId}/score-summary/monthly',
+                'ParentController@scoreSummaryMonthly'
+            );
         });
     });
 

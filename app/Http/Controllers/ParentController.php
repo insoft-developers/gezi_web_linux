@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\ParentAccount;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ParentController extends Controller
@@ -512,6 +513,136 @@ class ParentController extends Controller
             'total_salah' => collect($details)->where('hasil_jawaban', 'salah')->count(),
             'total_score' => collect($details)->sum('score'),
             'data' => $details
+        ]);
+    }
+
+    public function scoreSummaryMonthly(Request $request, $studentId)
+    {
+        $parent = $request->user('parent-api');
+
+        // Pastikan siswa merupakan anak dari orang tua yang login
+        $isChild = $parent->children()
+            ->where('users.id', $studentId)
+            ->exists();
+
+        if (!$isChild) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data siswa tidak ditemukan.',
+            ], 404);
+        }
+
+        $request->validate([
+            'year' => 'nullable|integer|min:2000|max:2100',
+        ]);
+
+        $year = (int) $request->input('year', date('Y'));
+
+        /*
+    |--------------------------------------------------------------------------
+    | QUIZ
+    |--------------------------------------------------------------------------
+    | Ambil session terakhir untuk setiap quiz pada setiap bulan.
+    */
+        $quizLatest = DB::table('quiz_sessions')
+            ->selectRaw('MAX(id) as id')
+            ->where('user_id', $studentId)
+            ->whereYear('created_at', $year)
+            ->groupBy('id_quiz', DB::raw('MONTH(created_at)'));
+
+        $quizScores = DB::table('quiz_sessions')
+            ->joinSub($quizLatest, 'latest', function ($join) {
+                $join->on('quiz_sessions.id', '=', 'latest.id');
+            })
+            ->join('quiz_answers', 'quiz_sessions.id', '=', 'quiz_answers.id_quiz')
+            ->selectRaw('MONTH(quiz_sessions.created_at) as bulan, SUM(quiz_answers.score) as total_score')
+            ->groupBy(DB::raw('MONTH(quiz_sessions.created_at)'))
+            ->pluck('total_score', 'bulan');
+
+        /*
+    |--------------------------------------------------------------------------
+    | BANK SOAL
+    |--------------------------------------------------------------------------
+    */
+        $bankLatest = DB::table('bank_soal_sessions')
+            ->selectRaw('MAX(id) as id')
+            ->where('id_user', $studentId)
+            ->whereYear('created_at', $year)
+            ->groupBy('id_bank_soal', DB::raw('MONTH(created_at)'));
+
+        $bankScores = DB::table('bank_soal_sessions')
+            ->joinSub($bankLatest, 'latest', function ($join) {
+                $join->on('bank_soal_sessions.id', '=', 'latest.id');
+            })
+            ->join('bank_soal_answers', 'bank_soal_sessions.id', '=', 'bank_soal_answers.id_session')
+            ->selectRaw('MONTH(bank_soal_sessions.created_at) as bulan, SUM(bank_soal_answers.score) as total_score')
+            ->groupBy(DB::raw('MONTH(bank_soal_sessions.created_at)'))
+            ->pluck('total_score', 'bulan');
+
+        /*
+    |--------------------------------------------------------------------------
+    | TRYOUT
+    |--------------------------------------------------------------------------
+    */
+        $tryoutLatest = DB::table('tryout_sessions')
+            ->selectRaw('MAX(id) as id')
+            ->where('id_user', $studentId)
+            ->whereYear('created_at', $year)
+            ->groupBy('id_tryout', DB::raw('MONTH(created_at)'));
+
+        $tryoutScores = DB::table('tryout_sessions')
+            ->joinSub($tryoutLatest, 'latest', function ($join) {
+                $join->on('tryout_sessions.id', '=', 'latest.id');
+            })
+            ->join('tryout_answers', 'tryout_sessions.id', '=', 'tryout_answers.id_session')
+            ->selectRaw('MONTH(tryout_sessions.created_at) as bulan, SUM(tryout_answers.score) as total_score')
+            ->groupBy(DB::raw('MONTH(tryout_sessions.created_at)'))
+            ->pluck('total_score', 'bulan');
+
+        /*
+    |--------------------------------------------------------------------------
+    | GABUNGKAN DATA JANUARI - DESEMBER
+    |--------------------------------------------------------------------------
+    */
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+
+        $monthly = [];
+
+        foreach ($namaBulan as $bulan => $nama) {
+            $quiz = (float) ($quizScores[$bulan] ?? 0);
+            $bank = (float) ($bankScores[$bulan] ?? 0);
+            $tryout = (float) ($tryoutScores[$bulan] ?? 0);
+
+            $monthly[] = [
+                'bulan' => $bulan,
+                'nama_bulan' => $nama,
+                'quiz_score' => $quiz,
+                'bank_score' => $bank,
+                'tryout_score' => $tryout,
+                'total_score' => $quiz + $bank + $tryout,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'student_id' => (int) $studentId,
+                'tahun' => $year,
+                'monthly' => $monthly,
+            ],
         ]);
     }
 }
