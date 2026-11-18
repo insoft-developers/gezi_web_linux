@@ -115,6 +115,8 @@ class WebSiswaController extends Controller
         $user->class_group = $input['class_group'];
         $user->fathers_phone = $input['fathers_phone'];
         $user->mothers_phone = $input['mothers_phone'];
+        $user->fathers_name = $input['fathers_name'];
+        $user->mothers_name = $input['mothers_name'];
         $user->profile_image = $input['profile_image'];
         $user->phone = $input['phone'];
         $user->created_at = date('Y-m-d H:i:s');
@@ -122,9 +124,6 @@ class WebSiswaController extends Controller
         $user->is_active = $input['is_active'];
         $user->location_id = $input['location_id'];
         $user->is_qrcode = $input['is_qrcode'];
-        $user->parents_name = $input['parents_name'];
-        $user->parents_username = $input['parents_username'];
-        $user->parents_password = bcrypt($input['parents_password']);
         $user->save();
 
         return response()->json([
@@ -215,13 +214,8 @@ class WebSiswaController extends Controller
             $user->password = bcrypt($input['password']);
         }
 
-        $user->parents_name = $input['parents_name'];
-        $user->parents_username = $input['parents_username'];
-
-        // Update password orang tua jika diisi, biarkan jika kosong
-        if (! empty($input['parents_password'])) {
-            $user->parents_password = bcrypt($input['parents_password']);
-        }
+        $user->fathers_name = $input['fathers_name'];
+        $user->mothers_name = $input['mothers_name'];
 
         $user->save();
 

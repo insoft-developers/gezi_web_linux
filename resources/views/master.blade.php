@@ -2937,14 +2937,7 @@
                         data: 'name',
                         name: 'name'
                     },
-                    {
-                        data: 'parents_name',
-                        name: 'parents_name'
-                    },
-                    {
-                        data: 'parents_username',
-                        name: 'parents_username'
-                    },
+                    
                     {
                         data: 'quiz_score',
                         name: 'quiz_score'
@@ -2974,8 +2967,16 @@
                         name: 'class_group'
                     },
                     {
+                        data: 'fathers_name',
+                        name: 'fathers_name'
+                    },
+                    {
                         data: 'fathers_phone',
                         name: 'fathers_phone'
+                    },
+                    {
+                        data: 'mothers_name',
+                        name: 'mothers_name'
                     },
                     {
                         data: 'mothers_phone',
@@ -3095,17 +3096,10 @@
                         $('#father_phone').val(data.fathers_phone || '');
                         $('#mother_phone').val(data.mothers_phone || '');
 
-                        // parents_name hanya satu kolom lama.
-                        // Jika hanya satu nomor tersedia, gunakan sebagai
-                        // nama awal yang masih dapat diedit admin.
-                        if (data.parents_name) {
-                            if (data.fathers_phone && !data.mothers_phone) {
-                                $('#father_name').val(data.parents_name);
-                            } else if (data.mothers_phone && !data.fathers_phone) {
-                                $('#mother_name').val(data.parents_name);
-                            }
-                        }
+                        $('#father_name').val(data.fathers_name || '');
+                        $('#mother_name').val(data.mothers_name || '');
 
+                        
                         $('#modal-parent').modal('show');
                     },
 
@@ -3300,9 +3294,8 @@
                         $("#nis").val(data.nis);
                         $("#location_id").val(data.location_id);
                         $("#is_qrcode").val(data.is_qrcode);
-                        $("#parents_username").val(data.parents_username);
-                        $("#parents_password").val(null);
-                        $("#parents_name").val(data.parents_name);
+                        $("#fathers_name").val(data.fathers_name);
+                        $("#mothers_name").val(data.mothers_name);
 
                     }
                 })

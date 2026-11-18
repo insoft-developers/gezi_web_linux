@@ -93,29 +93,24 @@
           </div>
 
           <div class="form-group">
+            <label>Nama Ayah</label>
+            <input type="text" class="form-control" id="fathers_name" name="fathers_name" />
+          </div>
+          <div class="form-group">
             <label>HP Ayah</label>
             <input type="text" class="form-control" id="fathers_phone" name="fathers_phone" />
           </div>
 
           <div class="form-group">
+            <label>Nama Ibu</label>
+            <input type="text" class="form-control" id="mothers_name" name="mothers_name" />
+          </div>
+          <div class="form-group">
             <label>HP Ibu</label>
             <input type="text" class="form-control" id="mothers_phone" name="mothers_phone" />
           </div>
 
-          <div class="form-group">
-            <label>Nama Orang Tua (Untuk ditampilkan di aplikasi Parents)</label>
-            <input type="text" class="form-control" id="parents_name" name="parents_name" />
-          </div>
-
-          <div class="form-group">
-            <label>Username Parents (Untuk username di aplikasi Parents)</label>
-            <input type="text" class="form-control" id="parents_username" name="parents_username" />
-          </div>
-
-           <div class="form-group">
-            <label>Password Parents (Untuk password di aplikasi Parents)</label>
-            <input type="text" class="form-control" id="parents_password" name="parents_password" />
-          </div>
+          
 
 
         </div>

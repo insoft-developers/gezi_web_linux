@@ -321,7 +321,9 @@ class UserController extends Controller
         $user->password = bcrypt($input['password']);
         $user->id_kelas = $input['class_id'];
         $user->class_group = $input['class_group'];
+        $user->fathers_name = $input['fathers_name'];
         $user->fathers_phone = $input['fathers_phone'];
+        $user->mothers_name = $input['mothers_name'];
         $user->mothers_phone = $input['mothers_phone'];
         $user->school_id = $input['school_id'];
         $user->phone = $input['phone'];
