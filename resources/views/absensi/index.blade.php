@@ -151,7 +151,7 @@
                             </div>
 
 
-                          <div class="col-md-2">
+                            <div class="col-md-2">
 
                                 <label>Jadwal</label>
 
@@ -219,6 +219,16 @@
                                     Export PDF
                                 </button>
 
+                                <button
+                                    type="button"
+                                    id="btn-bulk-auto-pulang"
+                                    class="btn btn-warning"
+                                    style="margin-left: 10px;">
+
+                                    <i class="fa fa-clock-o"></i>
+                                    Bulk Auto Pulang
+                                </button>
+
                             </div>
 
                         </div>
@@ -276,22 +286,16 @@
                                         </th>
 
                                         <th>
-                                            Tgl Masuk
+                                            Tanggal
                                         </th>
 
-                                        <th>
-                                            Jadwal Waktu Masuk
-                                        </th>
+                                       
                                         <th>
                                             Jam Masuk
                                         </th>
 
-                                        <th>
-                                            Tgl Pulang
-                                        </th>
-                                        <th>
-                                            Jadwal Waktu Pulang
-                                        </th>
+                                      
+                                      
 
                                         <th>
                                             Jam Pulang

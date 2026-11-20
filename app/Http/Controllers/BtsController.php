@@ -222,11 +222,43 @@ class BtsController extends Controller
             })
 
 
+
             ->addColumn('action', function ($data) {
-                return '<center>
-                  <a title="Edit Data" onclick="editData(' . $data->id . ')" style="margin-bottom:5px;width:25px;" class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-edit"></i></a>' .
-                    '<br><a title="Hapus Data" onclick="deleteData(' . $data->id . ')" style="width:25px;" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i></a></center>';
+
+                $html = '<center>';
+
+                $html .= '<a title="Edit Data"
+        onclick="editData(' . $data->id . ')"
+        style="margin-bottom:5px;width:25px;"
+        class="btn btn-warning btn-xs">
+        <i class="glyphicon glyphicon-edit"></i>
+    </a>';
+
+                // Tombol set pulang hanya jika status 1
+                if ($data->status == 1) {
+                    $html .= '<br>
+        <button type="button"
+            title="Set Pulang"
+            onclick="setPulang(' . $data->id . ')"
+            style="width:25px;"
+            class="btn btn-success btn-xs">
+            <i class="fa fa-sign-out"></i>
+        </button>';
+                }
+
+                $html .= '<br>
+        <a title="Hapus Data"
+            onclick="deleteData(' . $data->id . ')"
+            style="margin-top:5px;width:25px;"
+            class="btn btn-danger btn-xs">
+            <i class="glyphicon glyphicon-trash"></i>
+        </a>';
+
+                $html .= '</center>';
+
+                return $html;
             })
+
             ->rawColumns(['action', 'status_label', 'lat_masuk', 'lat_pulang'])
             ->make(true);
     }
@@ -421,5 +453,28 @@ class BtsController extends Controller
         return $pdf->stream(
             'data-bts-' . date('Y-m-d-His') . '.pdf'
         );
+    }
+
+
+    public function setPulang($id)
+    {
+        $data = Bts::findOrFail($id);
+
+        if ($data->status == 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data sudah berstatus pulang.'
+            ]);
+        }
+
+        $data->update([
+            'status' => 2,
+            'catatan_admin_pulang' => 'auto-admin'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status berhasil diubah menjadi pulang.'
+        ]);
     }
 }

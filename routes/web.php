@@ -246,3 +246,14 @@ Route::post(
     'parent-account/{id}/activate',
     'WebSiswaController@activateParentAccount'
 )->name('parent.activate');
+
+Route::post(
+    'absensi/bulk-auto-pulang',
+    'AbsensiController@bulkAutoPulang'
+)->name('absensi.bulk.auto.pulang');
+
+
+Route::post(
+    'bts/{id}/set-pulang',
+    'BtsController@setPulang'
+)->name('bts.set.pulang');

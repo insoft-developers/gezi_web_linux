@@ -10,6 +10,8 @@ use App\Exports\AbsensiExport;
 use App\User;
 use App\Location;
 use App\Jadwal;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 use PDF;
@@ -388,5 +390,69 @@ class AbsensiController extends Controller
         return $pdf->stream(
             'data-absensi-' . date('Y-m-d-H-i-s') . '.pdf'
         );
+    }
+
+
+    public function bulkAutoPulang()
+    {
+        try {
+
+            $total = 0;
+
+            DB::transaction(function () use (&$total) {
+
+                Absensi::with('jadwal')
+                    ->where('status', 1)
+                    ->orderBy('id')
+                    ->chunkById(200, function ($absensis) use (&$total) {
+
+                        foreach ($absensis as $absensi) {
+
+                           
+                            $jadwal = $absensi->jadwal;
+
+                            // Tanggal pulang selalu sama dengan tanggal masuk
+                            $tanggalPulang = $absensi->tanggal_masuk;
+
+                            // Default jam pulang kosong
+                            $jamPulang = null;
+
+                            // Khusus jadwal SISWA
+                            if (
+                                $jadwal &&
+                                strtoupper(trim($jadwal->name)) == 'SISWA'
+                            ) {
+                                // Jam masuk + 3 jam 30 menit
+                                $jamPulang = Carbon::parse(
+                                    $absensi->jam_masuk
+                                )->addMinutes(210)->format('H:i:s');
+                            }
+
+                            $absensi->update([
+                                'status' => 2,
+                                'tanggal_pulang' => $tanggalPulang,
+                                'jam_pulang' => $jamPulang,
+                                'keterangan_pulang' => 'auto-admin',
+                                'alasan_pulang' => 'auto-admin',
+                            ]);
+
+
+                            $total++;
+                        }
+                    });
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bulk auto pulang berhasil.',
+                'total' => $total
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
