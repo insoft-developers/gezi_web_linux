@@ -648,6 +648,7 @@ class ParentController extends Controller
         ]);
     }
 
+
     public function StudentRanking($userid)
     {
         try {
@@ -664,15 +665,155 @@ class ParentController extends Controller
 
             $tingkat = $user->kelas->tingkat_id;
 
-            $cacheKey = 'parent_student_ranking_v1_' . $tingkat;
+            $cacheKey = 'parent_student_ranking_v2_' . $tingkat;
 
             $ranking = Cache::remember(
                 $cacheKey,
                 now()->addMinutes(5),
                 function () use ($tingkat) {
 
-                    // Query ranking Quiz, Bank Soal, dan Tryout
-                    // diletakkan di sini.
+                    /*
+                |--------------------------------------------------------------------------
+                | Semua siswa dalam tingkat yang sama
+                |--------------------------------------------------------------------------
+                */
+
+                    $userIds = User::whereHas('kelas', function ($query) use ($tingkat) {
+                        $query->where('tingkat_id', $tingkat);
+                    })->pluck('id');
+
+                    if ($userIds->isEmpty()) {
+                        return [
+                            'kompetensi_dasar' => [],
+                            'bank_soal' => [],
+                            'tryout' => [],
+                        ];
+                    }
+
+                    /*
+                |--------------------------------------------------------------------------
+                | RANKING KOMPETENSI DASAR / QUIZ
+                |--------------------------------------------------------------------------
+                */
+
+                    $latestQuizSessions = DB::table('quiz_sessions')
+                        ->select(DB::raw('MAX(id) as id'))
+                        ->whereIn('user_id', $userIds)
+                        ->groupBy('user_id', 'id_quiz');
+
+                    $quizResults = DB::table('quiz_sessions')
+                        ->joinSub($latestQuizSessions, 'latest', function ($join) {
+                            $join->on('quiz_sessions.id', '=', 'latest.id');
+                        })
+                        ->join(
+                            'quiz_answers',
+                            'quiz_sessions.id',
+                            '=',
+                            'quiz_answers.id_quiz'
+                        )
+                        ->select(
+                            'quiz_sessions.user_id',
+                            DB::raw('SUM(quiz_answers.score) as total'),
+                            DB::raw('SUM(quiz_answers.lama_pengerjaan) as lama')
+                        )
+                        ->groupBy('quiz_sessions.user_id')
+                        ->orderByDesc('total')
+                        ->orderBy('lama')
+                        ->get();
+
+                    $quizRanking = [];
+
+                    foreach ($quizResults as $index => $result) {
+                        $quizRanking[$result->user_id] = $index + 1;
+                    }
+
+                    /*
+                |--------------------------------------------------------------------------
+                | RANKING BANK SOAL
+                |--------------------------------------------------------------------------
+                */
+
+                    $latestBankSessions = DB::table('bank_soal_sessions')
+                        ->select(DB::raw('MAX(id) as id'))
+                        ->whereIn('id_user', $userIds)
+                        ->groupBy('id_user', 'id_bank_soal');
+
+                    $bankResults = DB::table('bank_soal_sessions as s')
+                        ->joinSub($latestBankSessions, 'latest', function ($join) {
+                            $join->on('s.id', '=', 'latest.id');
+                        })
+                        ->join(
+                            'bank_soal_answers as a',
+                            'a.id_session',
+                            '=',
+                            's.id'
+                        )
+                        ->select(
+                            's.id_user',
+                            DB::raw('SUM(a.score) as total')
+                        )
+                        ->groupBy('s.id_user')
+                        ->orderByDesc('total')
+                        ->orderBy('s.id_user')
+                        ->get();
+
+                    $bankRanking = [];
+
+                    foreach ($bankResults as $index => $result) {
+                        $bankRanking[$result->id_user] = $index + 1;
+                    }
+
+                    /*
+                |--------------------------------------------------------------------------
+                | RANKING TRYOUT
+                |--------------------------------------------------------------------------
+                */
+
+                    $latestTryoutSessions = DB::table('tryout_sessions as ts')
+                        ->select(
+                            'ts.id',
+                            'ts.id_user',
+                            'ts.id_tryout'
+                        )
+                        ->join('users as u', 'u.id', '=', 'ts.id_user')
+                        ->join('kelas as k', 'k.id', '=', 'u.id_kelas')
+                        ->where('k.tingkat_id', $tingkat)
+                        ->whereNotExists(function ($query) {
+                            $query->select(DB::raw(1))
+                                ->from('tryout_sessions as newer')
+                                ->whereColumn('newer.id_user', 'ts.id_user')
+                                ->whereColumn('newer.id_tryout', 'ts.id_tryout')
+                                ->whereColumn('newer.id', '>', 'ts.id');
+                        });
+
+                    $tryoutResults = DB::table('tryout_answers as a')
+                        ->joinSub(
+                            $latestTryoutSessions,
+                            'latest',
+                            function ($join) {
+                                $join->on('latest.id', '=', 'a.id_session');
+                            }
+                        )
+                        ->select(
+                            'latest.id_user',
+                            DB::raw('SUM(a.score) as total')
+                        )
+                        ->groupBy('latest.id_user')
+                        ->orderByDesc('total')
+                        ->orderBy('latest.id_user')
+                        ->get();
+
+                    $tryoutRanking = [];
+
+                    foreach ($tryoutResults as $index => $result) {
+                        $tryoutRanking[$result->id_user] = $index + 1;
+                    }
+
+                    return [
+                        'kompetensi_dasar' => $quizRanking,
+                        'bank_soal' => $bankRanking,
+                        'tryout' => $tryoutRanking,
+                    ];
                 }
             );
 
@@ -685,7 +826,8 @@ class ParentController extends Controller
                 ]
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Parent Student Ranking: ' . $e->getMessage());
+
+
 
             return response()->json([
                 'success' => false,
