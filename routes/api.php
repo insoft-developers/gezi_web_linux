@@ -238,6 +238,11 @@ Route::prefix('v4')->group(function () {
                 'children/{studentId}/score-summary/monthly',
                 'ParentController@scoreSummaryMonthly'
             );
+
+            Route::get(
+                'children/{studentId}/ranking',
+                'ParentController@StudentRanking'
+            );
         });
     });
 

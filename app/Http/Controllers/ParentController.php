@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\ParentAccount;
+use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -644,5 +646,51 @@ class ParentController extends Controller
                 'monthly' => $monthly,
             ],
         ]);
+    }
+
+    public function StudentRanking($userid)
+    {
+        try {
+            $user = User::select('id', 'id_kelas')
+                ->with(['kelas:id,tingkat_id'])
+                ->find($userid);
+
+            if (!$user || !$user->kelas || !$user->kelas->tingkat_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data siswa atau tingkat tidak ditemukan.'
+                ], 404);
+            }
+
+            $tingkat = $user->kelas->tingkat_id;
+
+            $cacheKey = 'parent_student_ranking_v1_' . $tingkat;
+
+            $ranking = Cache::remember(
+                $cacheKey,
+                now()->addMinutes(5),
+                function () use ($tingkat) {
+
+                    // Query ranking Quiz, Bank Soal, dan Tryout
+                    // diletakkan di sini.
+                }
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'kompetensi_dasar' => $ranking['kompetensi_dasar'][$userid] ?? null,
+                    'bank_soal' => $ranking['bank_soal'][$userid] ?? null,
+                    'tryout' => $ranking['tryout'][$userid] ?? null,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Parent Student Ranking: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil ranking siswa.'
+            ], 500);
+        }
     }
 }
