@@ -257,3 +257,15 @@ Route::post(
     'bts/{id}/set-pulang',
     'BtsController@setPulang'
 )->name('bts.set.pulang');
+
+
+Route::resource('/parent_link', 'ParentLinkController');
+Route::get('/parent_link_table', 'ParentLinkController@table')->name('parent.link.table');
+
+
+
+Route::get('report/rekap-nilai', 'ReportController@rekapNilai')
+    ->name('report.rekap.nilai');
+
+Route::get('report/rekap-nilai/table', 'ReportController@tableRekapNilai')
+    ->name('report.rekap.nilai.table');

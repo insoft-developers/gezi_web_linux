@@ -57,6 +57,7 @@ $home = $parentMenu([
 'promo',
 'news',
 'ref',
+'parent_link'
 ]);
 
 
@@ -165,6 +166,7 @@ $pengumuman = $parentMenu([
 $siswa = $parentMenu([
 'school',
 'siswa',
+'report'
 ]);
 
 
@@ -216,6 +218,8 @@ $info = $childMenu(['information']);
 $promo = $childMenu(['promo']);
 $news = $childMenu(['news']);
 $ref = $childMenu(['ref']);
+$parent = $childMenu(['parent_link']);
+
 
 
 /*
@@ -323,6 +327,8 @@ $school = $childMenu([
 $murid = $childMenu([
 'siswa',
 ]);
+
+$report = $childMenu(['report']);
 
 
 /*
@@ -490,6 +496,18 @@ $dms = $childMenu([
                     <i class="fa fa-circle-o"></i>
 
                     Reference
+
+                </a>
+
+            </li>
+
+            <li class="{{ $parent }}">
+
+                <a href="{{ url('parent_link') }}">
+
+                    <i class="fa fa-circle-o"></i>
+
+                    Parent Link
 
                 </a>
 
@@ -994,6 +1012,20 @@ $dms = $childMenu([
                     <i class="fa fa-circle-o"></i>
 
                     Data Siswa
+
+                </a>
+
+            </li>
+
+
+
+             <li class="{{ $report }}">
+
+                <a href="{{ route('report.rekap.nilai') }}">
+
+                    <i class="fa fa-circle-o"></i>
+
+                    Rekap Nilai Siswa
 
                 </a>
 

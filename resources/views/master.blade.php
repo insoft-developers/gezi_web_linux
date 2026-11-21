@@ -250,6 +250,8 @@
     $view == 'tingkat' ||
     $view == 'jadwal' ||
     $view == 'absensi' ||
+    $view == 'parent-link' ||
+    $view == 'rekap-nilai' ||
     $view == 'bts')
     <!-- DataTables -->
     <script src="{{ asset('theme') }}/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
@@ -7837,6 +7839,267 @@
         });
     </script>
     @endif
+
+
+    @if ($view == 'parent-link')
+    <script>
+        $("#id_kelas").select2();
+        var table = $('#parent_link_table').DataTable({
+            dom: 'Blfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All'],
+            ],
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('parent.link.table') }}",
+            order: [
+                [0, "desc"]
+            ],
+            columns: [{
+                    data: 'id',
+                    name: 'id'
+                },
+                {
+                    data: 'title',
+                    name: 'title'
+                },
+
+                {
+                    data: 'url',
+                    name: 'url'
+                },
+
+                {
+                    data: 'id_kelas',
+                    name: 'id_kelas'
+                },
+                {
+                    data: 'is_active',
+                    name: 'is_active'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+
+
+        function addData() {
+            resetForm();
+            save_method = "add";
+            $('input[name=_method]').val('POST');
+            $(".modal-title").text("Add Parent link");
+            $("#modal-add").modal("show");
+        }
+
+
+        function editData(id) {
+            showLoading();
+            save_method = "edit";
+            $('input[name=_method]').val('PATCH');
+            $('#modal-add form')[0].reset();
+            $.ajax({
+                url: "{{ url('parent_link') }}" + "/" + id + "/edit",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    hideLoading();
+                    $('#modal-add').modal("show");
+                    $('.modal-title').text("Edit Parent link_file");
+                    $('#id').val(data.data.id);
+                    $("#title").val(data.data.title);
+                    $("#url").val(data.data.url);
+                    $("#id_kelas").val(data.kelas).trigger('change');
+                    $("#is_active").val(data.data.is_active);
+
+                }
+            })
+        }
+
+
+
+        $("#form-add").submit(function(e) {
+            $("#loadingProgress").show();
+            e.preventDefault();
+            var id = $('#id').val();
+            if (save_method == "add") url = "{{ url('parent_link') }}";
+            else url = "{{ url('parent_link') . '/' }}" + id;
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: new FormData($('#modal-add form')[0]),
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    if (data.success == true) {
+                        $('#modal-add').modal('hide');
+                        table.ajax.reload(null, false);
+                        $("#loadingProgress").hide();
+
+                    }
+                }
+
+            });
+        });
+
+
+        function deleteData(id) {
+            $("#id_hapus").val(id);
+            $("#modal-hapus").modal("show");
+        }
+
+        function deleteDataConfirm() {
+            var id = $("#id_hapus").val();
+            var csrf_token = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                url: "{{ url('parent_link') }}" + '/' + id,
+                type: "POST",
+                data: {
+                    '_method': 'DELETE',
+                    '_token': csrf_token
+                },
+                success: function($data) {
+                    table.ajax.reload(null, false);
+                    $("#modal-hapus").modal("hide");
+                }
+            });
+        }
+
+
+        function resetForm() {
+
+            $("#id_kelas").val("").trigger('change');
+            $("#title").val("");
+            $("#url").val("");
+            $("#is_active").val("");
+        }
+
+        function showLoading() {
+            $("#loadingProgress").show();
+        }
+
+
+        function hideLoading() {
+            $("#loadingProgress").hide();
+        }
+    </script>
+    @endif
+
+
+    @if ($view == 'rekap-nilai')
+    <script>
+        $('#btnExportExcel').click(function() {
+            var tahun = $('#tahun').val();
+            var id_kelas = $('#id_kelas').val();
+
+            var url = "{{ route('report.rekap.nilai.table') }}";
+
+            url += '?export=1';
+            url += '&tahun=' + encodeURIComponent(tahun);
+            url += '&id_kelas=' + encodeURIComponent(id_kelas);
+
+            window.location.href = url;
+        });
+
+
+        $('#tahun, #id_kelas').change(function() {
+            table.ajax.reload();
+        });
+
+
+        function updateHeaderTahun() {
+            var tahun = $('#tahun').val();
+
+            $('#rekap_nilai_table thead tr:first th[colspan="3"]').each(function() {
+                var bulan = $(this).text().trim().split(' ')[0];
+                $(this).text(bulan + ' ' + tahun);
+            });
+        }
+
+        $('#tahun').change(function() {
+            updateHeaderTahun();
+            table.ajax.reload();
+        });
+
+        updateHeaderTahun();
+
+
+        var columns = [{
+                data: null,
+                name: 'no',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+            {
+                data: 'nama_siswa',
+                name: 'users.name'
+            },
+            {
+                data: 'nama_kelas',
+                name: 'kelas.nama_kelas'
+            }
+        ];
+
+        for (var bulan = 1; bulan <= 12; bulan++) {
+            columns.push({
+                data: 'bulan_' + bulan + '_kd',
+                orderable: false,
+                searchable: false
+            }, {
+                data: 'bulan_' + bulan + '_bank',
+                orderable: false,
+                searchable: false
+            }, {
+                data: 'bulan_' + bulan + '_quiz',
+                orderable: false,
+                searchable: false
+            });
+        }
+
+        var table = $('#rekap_nilai_table').DataTable({
+            processing: true,
+            serverSide: true,
+            scrollX: true,
+            scrollCollapse: true,
+            autoWidth: false,
+            ajax: {
+                url: "{{ route('report.rekap.nilai.table') }}",
+                data: function(d) {
+                    d.tahun = $('#tahun').val();
+                    d.id_kelas = $('#id_kelas').val();
+                }
+            },
+            order: [
+                [0, 'asc']
+            ],
+            columns: columns,
+            pageLength: 25,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ]
+        });
+
+        $('#tahun').change(function() {
+            table.ajax.reload();
+        });
+    </script>
+    @endif
+
 
 </body>
 
