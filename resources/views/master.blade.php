@@ -3011,8 +3011,7 @@
             }
 
             $.ajax({
-                url: '{{ url('
-                parent - account ') }}/' + id + '/deactivate',
+                url: "{{ url('parent-account') }}/" + id + "/deactivate",
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}'
@@ -3046,8 +3045,7 @@
             }
 
             $.ajax({
-                url: '{{ url('
-                parent - account ') }}/' + id + '/activate',
+                url: "{{ url('parent-account') }}/" + id + "/activate",
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}'
