@@ -835,4 +835,54 @@ class ParentController extends Controller
             ], 500);
         }
     }
+
+
+    public function parentLinks(Request $request)
+    {
+        $parent = $request->user();
+
+        // Ambil kelas dari seluruh siswa milik orang tua
+        $kelasIds = DB::table('parent_student')
+            ->join('users', 'parent_student.student_id', '=', 'users.id')
+            ->where('parent_student.parent_id', $parent->id)
+            ->whereNotNull('users.id_kelas')
+            ->pluck('users.id_kelas')
+            ->unique()
+            ->values();
+
+        if ($kelasIds->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+
+        $query = DB::table('parent_links')
+            ->select('id', 'title', 'url', 'id_kelas')
+            ->where('is_active', 1)
+            ->where(function ($q) use ($kelasIds) {
+                foreach ($kelasIds as $idKelas) {
+                    $q->orWhereRaw(
+                        'FIND_IN_SET(?, id_kelas)',
+                        [$idKelas]
+                    );
+                }
+            });
+
+        // Pencarian judul
+        if ($request->filled('q')) {
+            $query->where(
+                'title',
+                'like',
+                '%' . $request->q . '%'
+            );
+        }
+
+        $data = $query->orderBy('title', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
 }

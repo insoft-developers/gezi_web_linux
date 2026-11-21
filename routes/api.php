@@ -243,6 +243,12 @@ Route::prefix('v4')->group(function () {
                 'children/{studentId}/ranking',
                 'ParentController@StudentRanking'
             );
+
+
+            Route::get(
+                'links',
+                'ParentController@parentLinks'
+            );
         });
     });
 
