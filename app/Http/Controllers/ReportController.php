@@ -22,10 +22,22 @@ class ReportController extends Controller
             ->orderBy('nama_kelas', 'asc')
             ->get();
 
+
+        $sekolah = DB::table('schools')
+            ->orderBy('school_name', 'asc')
+            ->get();
+
+        $lokasi = DB::table('locations')
+            ->orderBy('name', 'asc')
+            ->get();
+
+
         return view('siswa.rekap_nilai', compact(
             'view',
             'tahun',
-            'kelas'
+            'kelas',
+            'sekolah',
+            'lokasi'
         ));
     }
 
@@ -129,10 +141,15 @@ class ReportController extends Controller
     */
         $data = DB::table('users')
             ->leftJoin('kelas', 'users.id_kelas', '=', 'kelas.id')
+            ->leftJoin('locations', 'users.location_id', '=', 'locations.id')
+            ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
             ->select(
                 'users.id',
                 'users.name as nama_siswa',
-                'kelas.nama_kelas as nama_kelas'
+                'locations.name as lokasi',
+                'kelas.nama_kelas as nama_kelas',
+                'schools.school_name as sekolah',
+                'users.phone as hp'
             )
             ->leftJoinSub($kd, 'rekap_kd', function ($join) {
                 $join->on('users.id', '=', 'rekap_kd.student_id');
@@ -156,8 +173,19 @@ class ReportController extends Controller
             );
         }
 
+        // Filter kelas
         if ($request->filled('id_kelas')) {
             $data->where('users.id_kelas', $request->id_kelas);
+        }
+
+        // Filter sekolah
+        if ($request->filled('school_id')) {
+            $data->where('users.school_id', $request->school_id);
+        }
+
+        // Filter lokasi
+        if ($request->filled('location_id')) {
+            $data->where('users.location_id', $request->location_id);
         }
 
 
@@ -178,7 +206,10 @@ class ReportController extends Controller
                 $header = array(
                     'No.',
                     'Nama Siswa',
-                    'Kelas'
+                    'Lokasi',
+                    'Kelas',
+                    'Sekolah',
+                    'HP'
                 );
 
                 $namaBulan = array(
@@ -211,7 +242,10 @@ class ReportController extends Controller
                     $baris = array(
                         $no++,
                         $row->nama_siswa,
-                        $row->nama_kelas
+                        $row->lokasi,
+                        $row->nama_kelas,
+                        $row->sekolah,
+                        $row->hp
                     );
 
                     for ($bulan = 1; $bulan <= 12; $bulan++) {

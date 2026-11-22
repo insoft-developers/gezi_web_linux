@@ -8000,22 +8000,22 @@
     @if ($view == 'rekap-nilai')
     <script>
         $('#btnExportExcel').click(function() {
-            var tahun = $('#tahun').val();
-            var id_kelas = $('#id_kelas').val();
 
-            var url = "{{ route('report.rekap.nilai.table') }}";
+            var params = {
+                export: 1,
+                tahun: $('#tahun').val(),
+                id_kelas: $('#id_kelas').val(),
+                school_id: $('#school_id').val(),
+                location_id: $('#location_id').val()
+            };
 
-            url += '?export=1';
-            url += '&tahun=' + encodeURIComponent(tahun);
-            url += '&id_kelas=' + encodeURIComponent(id_kelas);
+            var query = $.param(params);
 
-            window.location.href = url;
+            window.location.href =
+                "{{ route('report.rekap.nilai.table') }}?" + query;
         });
 
 
-        $('#tahun, #id_kelas').change(function() {
-            table.ajax.reload();
-        });
 
 
         function updateHeaderTahun() {
@@ -8027,17 +8027,23 @@
             });
         }
 
-        $('#tahun').change(function() {
-            updateHeaderTahun();
+
+
+        $('#tahun, #id_kelas, #school_id, #location_id').change(function() {
             table.ajax.reload();
         });
 
         updateHeaderTahun();
 
+        function formatNilai(data, type, row) {
+            if (data === null || data === undefined || data === '' || Number(data) === 0) {
+                return '-';
+            }
 
+            return data;
+        }
         var columns = [{
                 data: null,
-                name: 'no',
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row, meta) {
@@ -8049,22 +8055,37 @@
                 name: 'users.name'
             },
             {
+                data: 'lokasi',
+                name: 'locations.name'
+            },
+            {
                 data: 'nama_kelas',
                 name: 'kelas.nama_kelas'
+            },
+            {
+                data: 'sekolah',
+                name: 'schools.school_name'
+            },
+            {
+                data: 'hp',
+                name: 'users.phone'
             }
         ];
 
         for (var bulan = 1; bulan <= 12; bulan++) {
             columns.push({
                 data: 'bulan_' + bulan + '_kd',
+                render: formatNilai,
                 orderable: false,
                 searchable: false
             }, {
                 data: 'bulan_' + bulan + '_bank',
+                render: formatNilai,
                 orderable: false,
                 searchable: false
             }, {
                 data: 'bulan_' + bulan + '_quiz',
+                render: formatNilai,
                 orderable: false,
                 searchable: false
             });
@@ -8081,6 +8102,8 @@
                 data: function(d) {
                     d.tahun = $('#tahun').val();
                     d.id_kelas = $('#id_kelas').val();
+                    d.school_id = $('#school_id').val();
+                    d.location_id = $('#location_id').val();
                 }
             },
             order: [

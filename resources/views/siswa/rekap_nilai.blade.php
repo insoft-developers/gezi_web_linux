@@ -20,6 +20,7 @@
             <div class="box-body">
 
                 <div class="row" style="margin-bottom:15px">
+
                     <div class="col-md-2">
                         <label>Tahun</label>
                         <select id="tahun" class="form-control">
@@ -29,7 +30,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Kelas</label>
                         <select id="id_kelas" class="form-control">
                             <option value="">Semua Kelas</option>
@@ -41,12 +42,38 @@
                         </select>
                     </div>
 
+                    <div class="col-md-3">
+                        <label>Sekolah</label>
+                        <select id="school_id" class="form-control">
+                            <option value="">Semua Sekolah</option>
+                            @foreach($sekolah as $s)
+                            <option value="{{ $s->id }}">
+                                {{ $s->school_name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Lokasi</label>
+                        <select id="location_id" class="form-control">
+                            <option value="">Semua Lokasi</option>
+                            @foreach($lokasi as $l)
+                            <option value="{{ $l->id }}">
+                                {{ $l->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="col-md-2">
                         <label>&nbsp;</label>
-                        <button type="button" id="btnExportExcel" class="btn btn-success form-control">
+                        <button type="button" id="btnExportExcel"
+                            class="btn btn-success form-control">
                             <i class="fa fa-file-excel-o"></i> Export Excel
                         </button>
                     </div>
+
                 </div>
 
                 <div class="table-responsive">
@@ -58,12 +85,15 @@
                             <tr>
                                 <th rowspan="2">No.</th>
                                 <th rowspan="2" style="min-width:180px">Nama Siswa</th>
+                                <th rowspan="2">Lokasi</th>
                                 <th rowspan="2">Kelas</th>
+                                <th rowspan="2">Sekolah</th>
+                                <th rowspan="2">HP</th>
 
                                 @foreach([
                                 'Jan','Feb','Mar','Apr','Mei','Jun',
                                 'Jul','Agu','Sep','Okt','Nov','Des'
-                                ] as $index => $bulan)
+                                ] as $bulan)
                                 <th colspan="3" class="text-center">
                                     {{ $bulan }} {{ $tahun ?? date('Y') }}
                                 </th>
