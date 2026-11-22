@@ -7999,6 +7999,13 @@
 
     @if ($view == 'rekap-nilai')
     <script>
+        $('#id_kelas, #school_id').select2({
+            width: '100%',
+            placeholder: 'Pilih data',
+            allowClear: true
+        });
+
+
         $('#btnExportExcel').click(function() {
 
             var params = {
