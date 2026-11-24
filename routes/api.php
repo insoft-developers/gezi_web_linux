@@ -120,6 +120,20 @@ Route::prefix('v4')->group(function () {
         Route::post('ref_list', 'SliderController@refList');
         Route::post('user_detail', 'UserController@userDetail');
         Route::get('dms', 'UserController@dms');
+
+
+        Route::prefix('emergency')->group(function () {
+
+            Route::get(
+                'master-data',
+                'EmergencyAttendanceController@masterData'
+            );
+
+            Route::post(
+                'sync',
+                'EmergencyAttendanceController@sync'
+            );
+        });
     });
 
 
